@@ -1,0 +1,13 @@
+lvgl_templet\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
+lvgl_templet\heap_4.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stdlib.h
+lvgl_templet\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+lvgl_templet\heap_4.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stddef.h
+lvgl_templet\heap_4.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stdint.h
+lvgl_templet\heap_4.o: ../Core/Inc/FreeRTOSConfig.h
+lvgl_templet\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+lvgl_templet\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+lvgl_templet\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+lvgl_templet\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3/portmacro.h
+lvgl_templet\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+lvgl_templet\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+lvgl_templet\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
