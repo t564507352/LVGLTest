@@ -1,8 +1,8 @@
 lvgl_templet\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/list.c
-lvgl_templet\list.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+lvgl_templet\list.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stdlib.h
 lvgl_templet\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-lvgl_templet\list.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-lvgl_templet\list.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+lvgl_templet\list.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stddef.h
+lvgl_templet\list.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stdint.h
 lvgl_templet\list.o: ../Core/Inc/FreeRTOSConfig.h
 lvgl_templet\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 lvgl_templet\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

@@ -3602,7 +3602,7 @@ Image component sizes
         44          4          0          0          0        722   dma.o
         52          6          0          0          0        569   driver_timer.o
        648         42          0          0          0       4293   driver_w25qxx.o
-         0          0          0          0          0      20084   event_groups.o
+         0          0          0          0          0      20092   event_groups.o
        228         88         48          8          0       4981   freertos.o
        312         38          0          8         72       2143   fsmc.o
        124          6          0          0          0        927   gpio.o
@@ -3610,13 +3610,13 @@ Image component sizes
        592          4          0          0          0       1789   ili9488.o
       1384        166       6080         24         14      16558   lcd_function.o
        138          0          0          0          0       3294   list.o
-       214         22          0          0          0     517653   main.o
+       214         22          0          0          0     517669   main.o
        662         70          0         12          0      10605   port.o
       1512         20          0          0         64      16636   queue.o
        252         24          0          0         88       2181   spi.o
         36          8        304          0       1024        784   startup_stm32f103xe.o
        100         18          0         12          0       5730   stm32f1xx_hal.o
-       158         14          0          0          0      28098   stm32f1xx_hal_cortex.o
+       158         14          0          0          0      28102   stm32f1xx_hal_cortex.o
       1082         52          0          0          0       3435   stm32f1xx_hal_dma.o
        840         74          0          0          0       4429   stm32f1xx_hal_gpio.o
         72         10          0          0          0        834   stm32f1xx_hal_msp.o
@@ -3629,16 +3629,16 @@ Image component sizes
       1474         10          0          0          0       9792   stm32f1xx_hal_uart.o
         60         24          0          0          0       4164   stm32f1xx_it.o
        232         14          0          0          0       3791   stm32f1xx_ll_fsmc.o
-         0          0          0          0          0       8876   stream_buffer.o
+         0          0          0          0          0       8880   stream_buffer.o
          2          0         24          4          0       1067   system_stm32f1xx.o
       2064        170          0         60       1220      22796   tasks.o
        460         50          0          0        144       3475   tim.o
-       912         82          0         20        280      25731   timers.o
-       392         52          0          0        212       2914   usart.o
+       912         82          0         20        280      25739   timers.o
+       392         52          0          0        212       2918   usart.o
       2204        158          0         12        192      10274   xpt2046.o
 
     ----------------------------------------------------------------------
-     21944       1542       6508        188      46064     789222   Object Totals
+     21944       1542       6508        188      46064     789266   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         46          0          2          0          2          0   (incl. Padding)
 
@@ -3692,8 +3692,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     23296       1578       6508        192      46064     779218   Grand Totals
-     23296       1578       6508        192      46064     779218   ELF Image Totals
+     23296       1578       6508        192      46064     779262   Grand Totals
+     23296       1578       6508        192      46064     779262   ELF Image Totals
      23296       1578       6508        192          0          0   ROM Totals
 
 ==============================================================================

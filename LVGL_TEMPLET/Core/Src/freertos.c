@@ -141,7 +141,7 @@ void TouchTask(void *argument)
 		xpt2046_read(&testData);
 		if(testData.state == LV_INDEV_STATE_PR)
 		{
-			sprintf(showMsgBuff,"Screen touch occurs! x = %d ; y = %d\r\n\r\n",testData.point.x,testData.point.y);
+			sprintf(showMsgBuff,"Screen touch occurs! x = %d ; y = %d\r\n",testData.point.x,testData.point.y);
 			printf("%s",showMsgBuff);
 			LCD_ShowString_Line(line,fontSize,(uint8_t*)showMsgBuff);
 			line++;

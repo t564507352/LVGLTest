@@ -1,7 +1,7 @@
 lvgl_templet\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3/port.c
 lvgl_templet\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-lvgl_templet\port.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-lvgl_templet\port.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+lvgl_templet\port.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stddef.h
+lvgl_templet\port.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stdint.h
 lvgl_templet\port.o: ../Core/Inc/FreeRTOSConfig.h
 lvgl_templet\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 lvgl_templet\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
