@@ -63,8 +63,12 @@ typedef enum
     ADDR_CONFIG     = (ADDR_FACT_UI    + 4096),  // 0x11
     ILI9341_PARA_FLASH_ADDR = (ADDR_CONFIG    + 4096),  // 0x12
     ILI9488_PARA_FLASH_ADDR = (ILI9341_PARA_FLASH_ADDR    + 4096),  // 0x13
-}TEST_ADDR;                               
+}TEST_ADDR;   
 
+//typedef enum
+//{
+//	ILI9488_PARA_FLASH_ADDR  = 0x00,
+//}	TEST_ADDR;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

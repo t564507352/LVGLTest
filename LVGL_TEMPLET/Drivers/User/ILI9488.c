@@ -2,6 +2,7 @@
 #include "ILI9488.h"
 #include "lcd_function.h"
 
+extern TIM_HandleTypeDef htim3;
 static void ILI9488_RegConfig(void);
 
 void ILI9488_Init(void)
@@ -13,6 +14,24 @@ void ILI9488_Init(void)
     LCD_Clear(WHITE);
 }
 
+void ILI9488_BackLightSwitch(uint8_t onOff)
+{
+	if(onOff)
+	{
+		if (HAL_TIM_PWM_Start_IT(&htim3, TIM_CHANNEL_1) != HAL_OK) // 启动LCD_PWM所在通道定时器PWM
+		{
+			Error_Handler();
+		}
+	}
+	else
+	{
+		if (HAL_TIM_PWM_Stop_IT(&htim3, TIM_CHANNEL_1) != HAL_OK) // 关闭LCD_PWM所在通道定时器PWM
+		{
+			Error_Handler();
+		}
+	}
+
+}
 static void ILI9488_RegConfig(void)
 {
     LCD_Write_Cmd(0xE0); //P-Gamma   

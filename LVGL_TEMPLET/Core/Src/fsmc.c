@@ -162,7 +162,9 @@ static void HAL_FSMC_MspInit(void){
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /* USER CODE BEGIN FSMC_MspInit 1 */
-
+	//CUBEMX配置FSMC必须要配置一个addr口，这里不需要，也不好更改，更改了一旦保存就又填上了，这里deinit一下
+  HAL_GPIO_DeInit(GPIOF, GPIO_PIN_0);
+	__HAL_RCC_GPIOF_CLK_DISABLE();
   /* USER CODE END FSMC_MspInit 1 */
 }
 

@@ -1,7 +1,7 @@
 lvgl_templet\freertos.o: ../Core/Src/freertos.c
 lvgl_templet\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-lvgl_templet\freertos.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stddef.h
-lvgl_templet\freertos.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stdint.h
+lvgl_templet\freertos.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+lvgl_templet\freertos.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 lvgl_templet\freertos.o: ../Core/Inc/FreeRTOSConfig.h
 lvgl_templet\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 lvgl_templet\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -36,8 +36,15 @@ lvgl_templet\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash
 lvgl_templet\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_sram.h
 lvgl_templet\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_fsmc.h
 lvgl_templet\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
+lvgl_templet\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 lvgl_templet\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 lvgl_templet\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 lvgl_templet\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 lvgl_templet\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h
 lvgl_templet\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
+lvgl_templet\freertos.o: ../Drivers/User/lcd_function.h
+lvgl_templet\freertos.o: ../Drivers/User/driver_timer.h
+lvgl_templet\freertos.o: ../Drivers/User/XPT2046.h
+lvgl_templet\freertos.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+lvgl_templet\freertos.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+lvgl_templet\freertos.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

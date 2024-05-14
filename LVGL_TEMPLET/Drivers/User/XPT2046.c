@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "XPT2046.h"
 #include "lcd_function.h"
-
+#include "driver_w25qxx.h"
 /********** 全局变量定义 **********/
 
 /********** 局部变量定义 **********/
@@ -22,7 +22,7 @@ static uint8_t XPT2046_ReadAdc_Smooth_XY_qucik( _touch_xy * pScreenCoordinate );
 static uint8_t      XPT2046_Calculate_CalibrationFactor(_touch_xy * pDisplayCoordinate, \
                                                         _touch_xy * pScreenSample, \
                                                         _touch_calibration * pCalibrationFactor);       
-//static uint8_t      XPT2046_Touch_Calibrate(uint8_t LCD_Mode);
+
 
 
 /********** XPT2046初始化函数定义 **********/
@@ -668,37 +668,38 @@ uint8_t XPT2046_TouchDetect(void)
 }
 
 
-//bool xpt2046_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
-//{
-//    uint8_t ret = 0;
-//    static int16_t last_x = 0;
-//    static int16_t last_y = 0;
+//bentong change
+bool xpt2046_read(/*lv_indev_drv_t * indev_drv,*/ lv_indev_data_t * data)
+{
+    uint8_t ret = 0;
+    static int16_t last_x = 0;
+    static int16_t last_y = 0;
 
-//    _touch_xy strScreenSample;
-//    
-//    if(XPT2046_TouchDetect() == TOUCH_DET_PRESSED)
-//    {
-//        XPT2046_CS_ENABLE();
-//        ret = XPT2046_Get_TouchedPoint(&strScreenSample, touch_para);
-//        XPT2046_CS_DISABLE();
+    _touch_xy strScreenSample;
+    
+    if(XPT2046_TouchDetect() == TOUCH_DET_PRESSED)
+    {
+        XPT2046_CS_ENABLE();
+        ret = XPT2046_Get_TouchedPoint(&strScreenSample, touch_para);
+        XPT2046_CS_DISABLE();
 
-//        if(ret==1)
-//        {
-//            last_x = strScreenSample.x;
-//            last_y = strScreenSample.y;
-//            
-//            data->point.x = last_x;
-//            data->point.y = last_y;
-//            data->state = LV_INDEV_STATE_PR;
-//        }
-//    }
-//    else
-//    {
-//        data->point.x = last_x;
-//        data->point.y = last_y;
-//		data->state = LV_INDEV_STATE_REL;
-//    }
-//    
-//    return false;
-//}
+        if(ret==1)
+        {
+            last_x = strScreenSample.x;
+            last_y = strScreenSample.y;
+            
+            data->point.x = last_x;
+            data->point.y = last_y;
+            data->state = LV_INDEV_STATE_PR;
+        }
+    }
+    else
+    {
+        data->point.x = last_x;
+        data->point.y = last_y;
+		data->state = LV_INDEV_STATE_REL;
+    }
+    
+    return false;
+}
 

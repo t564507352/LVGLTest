@@ -1,10 +1,31 @@
 #ifndef __XPT2046_H
 #define __XPT2046_H
-
+#include <stdbool.h>
 #include "main.h"
 #include <stdio.h>  
 #include <string.h>
 //#include "../lvgl/lvgl.h" //BENTONG CHANGE
+
+#if 1
+//bentong do it
+typedef int16_t lv_coord_t;
+typedef uint8_t lv_indev_state_t;
+typedef struct {
+    lv_coord_t x;
+    lv_coord_t y;
+} lv_point_t;
+
+typedef struct {
+    lv_point_t point; /**< For LV_INDEV_TYPE_POINTER the currently pressed point*/
+    uint32_t key;     /**< For LV_INDEV_TYPE_KEYPAD the currently pressed key*/
+    uint32_t btn_id;  /**< For LV_INDEV_TYPE_BUTTON the currently pressed button*/
+    int16_t enc_diff; /**< For LV_INDEV_TYPE_ENCODER number of steps since the previous read*/
+
+    lv_indev_state_t state; /**< LV_INDEV_STATE_REL or LV_INDEV_STATE_PR*/
+} lv_indev_data_t;
+enum { LV_INDEV_STATE_REL = 0, LV_INDEV_STATE_PR };
+
+# endif
 
 /******************************* XPT2046 引脚函数定义 ***************************/
 /* XPT2046 触摸屏触摸信号指示引脚定义(不使用中断)*/
@@ -107,7 +128,7 @@ typedef enum
 extern _touch_para                    touch_para[6];
 
 extern void XPT2046_Init(void);
-//extern bool xpt2046_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);
+extern bool xpt2046_read(/*lv_indev_drv_t * indev_drv, */lv_indev_data_t * data);//bentong do it
 extern uint8_t XPT2046_Touch_Calibrate(uint8_t LCD_Mode);
 
 #endif /* __XPT2046_H */

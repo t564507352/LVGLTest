@@ -2,14 +2,25 @@
 #include "fonts.h"
 #include "ILI9488.h"
 #include "lcd_function.h"
-
+#include "fsmc.h"
 
 #define LCD                 ((__IO _lcd*)(0x6C000000 + (1<<24) - 2))
+
+
+ typedef struct _tFont
+{ 
+	uint16_t Size;
+  uint16_t Width;
+  uint16_t Height;
+} sFONT;
+ sFONT font12 = {12,6,12};
+ sFONT font16 = {16,8,16};
+ sFONT font24 = {24,12,24};
 
 /********** 全局变量定义 **********/
 _lcddev     lcddev;
 _lcd_color  lcd_color;
-
+volatile uint8_t lcd_brt;
 /********** 局部变量定义 **********/
 
 /********** LCD读写函数定义 **********/
@@ -21,6 +32,7 @@ _lcd_color  lcd_color;
 */
 void LCD_Write_Cmd(uint16_t _cmd)
 {
+	
     _cmd = _cmd;
     LCD->reg = _cmd;
 }
@@ -104,11 +116,12 @@ void LCD_BackLed_Ctrl(FunctionalState state)
 {
     if(state == ENABLE)
     {
-        LCD_BL(0);
+        LCD_BL(1);
+
     }
     else if(state == DISABLE)
     {
-        LCD_BL(1);
+        LCD_BL(0);
     }
 }
 
@@ -393,26 +406,128 @@ void LCD_ShowxNum(uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint8_t siz
 	 	LCD_ShowChar(x+(size/2)*t,y,temp+'0',size,mode&0X01); 
 	}
 } 
+	
+
+//line :行数	 
+//len :数字的位数
+//size:字体大小
+//num:数值(0~4294967295);	 
+void LCD_ShowNum_Line(uint16_t line, uint32_t num,uint8_t len,uint8_t fontSize)
+{         
+	sFONT* tempFont = &font12;
+	uint8_t t = 0, temp = 0;
+	uint8_t enshow = 0;			
+	switch(fontSize)
+	{
+		case 12:
+		{
+			tempFont = &font12;
+			break;
+		}
+		case 16:
+		{
+			tempFont = &font16;
+			break;
+		}
+		case 24:
+		{
+			tempFont = &font24;
+			break;
+		}
+		default :
+		{
+			printf("字体设置不正确！\r\n");
+			break;			
+		}
+	}
+	line *= tempFont->Height;		   
+	for(t=0; t<len; t++)
+	{
+		temp=(num/LCD_Pow(10,len-t-1))%10;
+		if(enshow==0&&t<(len-1))
+		{
+			if(temp==0)
+			{
+				LCD_ShowChar(0+(tempFont->Width/2)*t, line, ' ', tempFont->Size, 0);
+				continue;
+			}else enshow=1; 
+		 	 
+		}
+	 	LCD_ShowChar(0+(tempFont->Width/2)*t, line, temp+'0', tempFont->Size, 0); 
+	}
+}
 //显示字符串
 //x,y:起点坐标
 //width,height:区域大小  
 //size:字体大小
 //*p:字符串起始地址		  
-void LCD_ShowString(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t size, uint8_t *p)
+void LCD_ShowString(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t fontSize, uint8_t *p)
 {         
 	uint8_t x0 = x;
 	width += x;
 	height += y;
     while((*p<='~')&&(*p>=' '))//判断是不是非法字符!
     {       
-        if(x>=width){x=x0;y+=size;}
+        if(x>=width){x=x0;y+=fontSize;}
         if(y>=height)break;//退出
-        LCD_ShowChar(x,y,*p,size,0);
-        x+=size/2;
+        LCD_ShowChar(x,y,*p,fontSize,0);
+        x+=fontSize/2;
         p++;
     }  
 }
-
+//显示字符串
+//line:行数  
+//fontSize:字体大小
+//*p:字符串起始地址		  
+void LCD_ShowString_Line(uint16_t line, uint8_t fontSize, uint8_t *p)
+{         
+	uint16_t usX = 0;
+	sFONT* tempFont = &font12;
+	switch(fontSize)
+	{
+		case 12:
+		{
+			tempFont = &font12;
+			break;
+		}
+		case 16:
+		{
+			tempFont = &font16;
+			break;
+		}
+		case 24:
+		{
+			tempFont = &font24;
+			break;
+		}
+		default :
+		{
+			printf("字体设置不正确！\r\n");
+			break;			
+		}
+	}
+	line *= tempFont->Height;
+	while ( *p != '\0' )
+	{
+	if ( ( usX  + tempFont->Width ) > lcddev.hor_res )
+		{
+			usX = 0;
+			line += tempFont->Height;
+		}
+		
+		if ( ( line + tempFont->Height ) > lcddev.ver_res )
+		{
+			usX = 0;
+			line = 0;
+		}
+		
+		LCD_ShowChar(usX,line,*p,fontSize,0);
+		
+		p ++;
+		
+		usX += tempFont->Width;
+	}
+}
 //画线
 //x1,y1:起点坐标
 //x2,y2:终点坐标  
@@ -457,18 +572,22 @@ void LCD_DrawCross(uint16_t usX, uint16_t usY)
 	LCD_DrawLine(usX, usY - 10, usX, usY+10);	
 }
 
+void LCD_Brightness(uint8_t value)
+{
+	if (value > 100)
+		value = 100;
+	lcd_brt = value; // 背光亮度，范围0~100
+}
+
+
 /********** LCD初始化函数定义 **********/
 void LCD_Init(void)
 {
+		LCD_Brightness(90);
     LCD_BackLed_Ctrl(ENABLE);
     LCD_Rest();
     LCD_GetDevID();
-    
-    if(lcddev.dev_id == 0x9341)
-    {
-        ILI9341_Init();
-    }
-    else if(lcddev.dev_id == 0x9488)
+		if(lcddev.dev_id == 0x9488)
     {
         ILI9488_Init();
     }

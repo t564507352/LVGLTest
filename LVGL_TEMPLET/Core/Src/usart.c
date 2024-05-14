@@ -21,7 +21,8 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-
+#include <stdlib.h>
+#include <stdio.h>
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -214,5 +215,28 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+/*****************************************************
+*function:	写字符文件函数
+*param1:	输出的字符
+*param2:	文件指针
+*return:	输出字符的ASCII码
+******************************************************/
+int fputc(int ch, FILE *f)
+{
+	HAL_UART_Transmit(&huart1, (uint8_t*)&ch, 1, 10);
+	return ch;
+}
+
+/*****************************************************
+*function:	读字符文件函数
+*param1:	文件指针
+*return:	读取字符的ASCII码
+******************************************************/
+int fgetc(FILE *f)
+{
+    uint8_t ch = 0;
+    HAL_UART_Receive(&huart1, (uint8_t*)&ch, 1, 10);
+    return (int)ch;
+}
 
 /* USER CODE END 1 */

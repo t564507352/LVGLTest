@@ -42,7 +42,12 @@ void HAL_SRAM_MspInit(SRAM_HandleTypeDef* hsram);
 void HAL_SRAM_MspDeInit(SRAM_HandleTypeDef* hsram);
 
 /* USER CODE BEGIN Prototypes */
-
+#define LCD_RS_PIN                  GPIO_PIN_2   // PE2  A23                          
+#define LCD_BL_PIN                  GPIO_PIN_6   // PC6  LCD_PWM 
+#define LCD_RST_PIN                 GPIO_PIN_11
+#define LCD_BL(VALUE)              	ILI9488_BackLightSwitch(VALUE)//±³¾°¹â
+#define LCD_RS(VALUE)               HAL_GPIO_WritePin(GPIOE, LCD_RS_PIN, VALUE?GPIO_PIN_SET:GPIO_PIN_RESET)//¶ÁÐ´ÇÐ»»
+#define LCD_RST(VALUE)              HAL_GPIO_WritePin(GPIOF, LCD_RST_PIN, VALUE?GPIO_PIN_SET:GPIO_PIN_RESET)
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

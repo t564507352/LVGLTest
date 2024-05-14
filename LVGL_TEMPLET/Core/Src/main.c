@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "dma.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -27,7 +28,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include "lcd_function.h"
+#include "XPT2046.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -86,7 +89,6 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -97,8 +99,12 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM3_Init();
   MX_TIM2_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+	HAL_Delay(1000);
+	LCD_Init();
 
+	XPT2046_Init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -197,6 +203,8 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+		printf("inError_Handler");
+		HAL_Delay(1000);
   }
   /* USER CODE END Error_Handler_Debug */
 }

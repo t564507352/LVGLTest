@@ -1,8 +1,8 @@
 lvgl_templet\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
-lvgl_templet\event_groups.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stdlib.h
+lvgl_templet\event_groups.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 lvgl_templet\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-lvgl_templet\event_groups.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stddef.h
-lvgl_templet\event_groups.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stdint.h
+lvgl_templet\event_groups.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+lvgl_templet\event_groups.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 lvgl_templet\event_groups.o: ../Core/Inc/FreeRTOSConfig.h
 lvgl_templet\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 lvgl_templet\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

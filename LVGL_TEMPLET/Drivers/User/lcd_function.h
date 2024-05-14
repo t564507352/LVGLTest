@@ -3,7 +3,6 @@
 
 #include "main.h"
 #include "driver_timer.h"
-
 /*************** LCD延时函数重定义 ***************/
 #define lcd_delay_ms(m)             HAL_Delay(m)
 #define lcd_delay_us(u)             us_timer_delay(u)
@@ -117,7 +116,9 @@ extern void     LCD_ShowString(uint16_t x, uint16_t y, uint16_t width, uint16_t 
 extern void     LCD_SetPointPixel(uint16_t usX, uint16_t usY);
 extern void     LCD_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 extern void     LCD_DrawCross(uint16_t usX, uint16_t usY);
-
+extern void LCD_Brightness(uint8_t value);
+extern void ILI9488_BackLightSwitch(uint8_t onOff);
+extern void LCD_ShowString_Line(uint16_t line, uint8_t fontSize, uint8_t *p);
 /********** LCD初始化函数声明 **********/
 extern void LCD_Init(void);
 

@@ -5,6 +5,7 @@
 "lvgl_templet\freertos.o"
 "lvgl_templet\dma.o"
 "lvgl_templet\fsmc.o"
+"lvgl_templet\spi.o"
 "lvgl_templet\tim.o"
 "lvgl_templet\usart.o"
 "lvgl_templet\stm32f1xx_it.o"
@@ -23,6 +24,7 @@
 "lvgl_templet\stm32f1xx_hal_exti.o"
 "lvgl_templet\stm32f1xx_ll_fsmc.o"
 "lvgl_templet\stm32f1xx_hal_sram.o"
+"lvgl_templet\stm32f1xx_hal_spi.o"
 "lvgl_templet\stm32f1xx_hal_tim.o"
 "lvgl_templet\stm32f1xx_hal_tim_ex.o"
 "lvgl_templet\stm32f1xx_hal_uart.o"
@@ -37,7 +39,12 @@
 "lvgl_templet\cmsis_os2.o"
 "lvgl_templet\heap_4.o"
 "lvgl_templet\port.o"
---strict --scatter "LVGL_TEMPLET\LVGL_TEMPLET.sct"
+"lvgl_templet\ili9488.o"
+"lvgl_templet\lcd_function.o"
+"lvgl_templet\xpt2046.o"
+"lvgl_templet\driver_timer.o"
+"lvgl_templet\driver_w25qxx.o"
+--library_type=microlib --strict --scatter "LVGL_TEMPLET\LVGL_TEMPLET.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "LVGL_TEMPLET.map" -o LVGL_TEMPLET\LVGL_TEMPLET.axf
