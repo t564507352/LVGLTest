@@ -5,7 +5,6 @@ cls
 @echo.
 @echo Keil工程清理脚本 
 @echo 请将此文件放在要清理项目的根目录下 
-@echo www.100ask.net
 @echo.        
 @echo off
 
