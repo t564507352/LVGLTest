@@ -73,6 +73,7 @@ void XPT2046_Init(void)
     }
     
     if((touch_para[lcddev.scan_mode].para_flag != FINISHED) || (touch_para[lcddev.scan_mode].para_force == FORCED))
+//		if(1)
     {
         // 如果当前扫描方式下未成校准过则进行校准
         while(ret==0)

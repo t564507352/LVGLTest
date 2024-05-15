@@ -267,6 +267,34 @@ void LCD_Color_Fill(uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t
     }  	  
 } 
 
+
+//在指定区域内填充指定颜色块	，开辟窗口填充方式，理论能快一点点,写的有问题
+//void LCD_Color_Fill_New ( uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end, uint16_t *color )
+//{	
+//	uint32_t i = 0 ,cnt= 0;
+//	LCD_Write_Cmd ( 0x2A ); 				 /* 设置X坐标 */
+//	LCD_Write_Data ( x_start >> 8  );	 /* 先高8位，然后低8位 */
+//	LCD_Write_Data ( x_start & 0xff  );	 /* 设置起始点和结束点*/
+//	LCD_Write_Data ( ( x_start + x_end - 1 ) >> 8  );
+//	LCD_Write_Data ( ( x_start + x_end - 1 ) & 0xff  );
+
+//	LCD_Write_Cmd ( 0x2B ); 			     /* 设置Y坐标*/
+//	LCD_Write_Data ( y_start >> 8  );
+//	LCD_Write_Data ( y_start & 0xff  );
+//	LCD_Write_Data ( ( y_start + y_end - 1 ) >> 8 );
+//	LCD_Write_Data ( ( y_start + y_end - 1) & 0xff );
+
+//	
+//	LCD_Write_Cmd(lcddev.gram_cmd);
+//	cnt = (x_end - x_start)	* (y_end - y_start);
+//	for ( i = 0; i < cnt; i ++ )
+//	LCD_Write_Data ( *color );
+//		
+//	
+//	
+//}
+
+
 //m^n函数
 //返回值:m^n次方.
 uint32_t LCD_Pow(uint8_t m, uint8_t n)

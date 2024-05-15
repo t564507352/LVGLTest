@@ -76,8 +76,8 @@ void lv_port_disp_init(void)
 //三种模式选一个就行
     /* Example for 1) */
     static lv_disp_draw_buf_t draw_buf_dsc_1;
-    static lv_color_t buf_1[MY_DISP_HOR_RES * 10];                          /*A buffer for 10 rows*/
-    lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, MY_DISP_HOR_RES * 10);   /*Initialize the display buffer*/
+    static lv_color_t buf_1[MY_DISP_HOR_RES * 20];                          /*A buffer for 10 rows*/
+    lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, MY_DISP_HOR_RES * 20);   /*Initialize the display buffer*/
 
 #if 0
     /* Example for 2) */
@@ -147,6 +147,7 @@ static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_colo
         for(x = area->x1; x <= area->x2; x++) {
             /*Put a pixel to the display. For example:*/
             /*put_px(x, y, *color_p)*/
+						LCD_Fast_DrawPoint(x,y,*(uint16_t*)color_p);
             color_p++;
         }
     }

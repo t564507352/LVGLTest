@@ -116,9 +116,10 @@ extern void     LCD_ShowString(uint16_t x, uint16_t y, uint16_t width, uint16_t 
 extern void     LCD_SetPointPixel(uint16_t usX, uint16_t usY);
 extern void     LCD_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 extern void     LCD_DrawCross(uint16_t usX, uint16_t usY);
-extern void LCD_Brightness(uint8_t value);
-extern void ILI9488_BackLightSwitch(uint8_t onOff);
-extern void LCD_ShowString_Line(uint16_t line, uint8_t fontSize, uint8_t *p);
+extern void			LCD_Brightness(uint8_t value);
+extern void 		ILI9488_BackLightSwitch(uint8_t onOff);
+extern void		  LCD_ShowString_Line(uint16_t line, uint8_t fontSize, uint8_t *p);
+//extern void 		LCD_Color_Fill_New ( uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end, uint16_t *color );
 /********** LCD初始化函数声明 **********/
 extern void LCD_Init(void);
 
