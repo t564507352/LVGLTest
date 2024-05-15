@@ -3,7 +3,7 @@
 #include "lcd_function.h"
 #include "driver_w25qxx.h"
 /********** 全局变量定义 **********/
-
+ _touch_xy g_strScreenSample;
 /********** 局部变量定义 **********/
 //static _touch_calibration      touch_calibration = {0};
 _touch_para                    touch_para[6] = {0};
@@ -73,6 +73,7 @@ void XPT2046_Init(void)
     }
     
     if((touch_para[lcddev.scan_mode].para_flag != FINISHED) || (touch_para[lcddev.scan_mode].para_force == FORCED))
+//		if(1)
     {
         // 如果当前扫描方式下未成校准过则进行校准
         while(ret==0)
@@ -667,7 +668,7 @@ uint8_t XPT2046_TouchDetect(void)
 	return detectResult;
 }
 
-
+#if 0
 //bentong change
 bool xpt2046_read(/*lv_indev_drv_t * indev_drv,*/ lv_indev_data_t * data)
 {
@@ -702,4 +703,24 @@ bool xpt2046_read(/*lv_indev_drv_t * indev_drv,*/ lv_indev_data_t * data)
     
     return false;
 }
-
+#endif
+bool xpt2046_is_pressed(void)
+{
+    uint8_t ret = 0;
+    if(XPT2046_TouchDetect() == TOUCH_DET_PRESSED)
+    {
+        XPT2046_CS_ENABLE();
+        ret = XPT2046_Get_TouchedPoint(&g_strScreenSample, touch_para);
+        XPT2046_CS_DISABLE();
+        if(ret==1)
+        {
+            return true;
+        }
+    }
+    else
+    {
+				return false;
+    }
+    
+    return false;
+}
