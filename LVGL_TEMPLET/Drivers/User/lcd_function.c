@@ -180,12 +180,7 @@ void LCD_GRAM_Scan(uint8_t _opt)
     
     if(tmp==0)  // 0 2 4 6 竖屏
     {
-        if(lcddev.dev_id == 0x9341)
-        {
-            lcddev.hor_res = 240;
-            lcddev.ver_res = 320;
-        }
-        else if(lcddev.dev_id == 0x9488)
+        if(lcddev.dev_id == 0x9488)
         {
             lcddev.hor_res = 320;
             lcddev.ver_res = 480;
@@ -193,12 +188,7 @@ void LCD_GRAM_Scan(uint8_t _opt)
     }
     else if(tmp == 1) // 1 3 5 横屏
     {
-        if(lcddev.dev_id == 0x9341)
-        {
-            lcddev.hor_res = 320;
-            lcddev.ver_res = 240;
-        }
-        else if(lcddev.dev_id == 0x9488)
+        if(lcddev.dev_id == 0x9488)
         {
             lcddev.hor_res = 480;
             lcddev.ver_res = 320;

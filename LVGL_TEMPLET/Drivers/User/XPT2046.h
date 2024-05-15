@@ -6,7 +6,7 @@
 #include <string.h>
 //#include "../lvgl/lvgl.h" //BENTONG CHANGE
 
-#if 1
+#if 0
 //bentong do it
 typedef int16_t lv_coord_t;
 typedef uint8_t lv_indev_state_t;
@@ -128,8 +128,11 @@ typedef enum
 extern _touch_para                    touch_para[6];
 
 extern void XPT2046_Init(void);
+#if 0
 extern bool xpt2046_read(/*lv_indev_drv_t * indev_drv, */lv_indev_data_t * data);//bentong do it
+#endif
 extern uint8_t XPT2046_Touch_Calibrate(uint8_t LCD_Mode);
+bool xpt2046_is_pressed(void);
 
 #endif /* __XPT2046_H */
 

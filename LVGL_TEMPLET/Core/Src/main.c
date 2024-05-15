@@ -102,9 +102,6 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 	HAL_Delay(1000);
-	LCD_Init();
-
-	XPT2046_Init();
   /* USER CODE END 2 */
 
   /* Init scheduler */

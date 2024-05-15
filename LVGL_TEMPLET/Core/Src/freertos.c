@@ -25,8 +25,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lcd_function.h"
-#include "XPT2046.h"
+//#include "lcd_function.h"
+//#include "XPT2046.h"
+#include "lvglApp.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,19 +48,26 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-osThreadId_t TouchTaskTaskHandle;
+//osThreadId_t TouchTaskTaskHandle;//²âÊÔ´¥ÃþÆÁµÄÈÎÎñ
+osThreadId_t LVGLTaskHandle;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .stack_size = 128,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
+const osThreadAttr_t LVGLTask_attributes = {
+  .name = "LVGLTask",
+  .stack_size = 512*2,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-void TouchTask(void *argument);
+//void TouchTask(void *argument);//²âÊÔ´¥ÃþÆÁµÄÈÎÎñ
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -97,7 +106,9 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-	TouchTaskTaskHandle = osThreadNew(TouchTask, NULL, &defaultTask_attributes);
+//	TouchTaskTaskHandle = osThreadNew(TouchTask, NULL, &defaultTask_attributes);//²âÊÔ´¥ÃþÆÁµÄÈÎÎñ
+
+	LVGLTaskHandle = osThreadNew(LVGLTask, NULL, &defaultTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -127,31 +138,31 @@ void StartDefaultTask(void *argument)
 }
 
 /* Private application code --------------------------------------------------*/
-/* USER CODE BEGIN Application */
-void TouchTask(void *argument)
-{
-	LCD_SetAllColor(WHITE,BLACK);
-	uint8_t line = 0;
-	uint16_t fontSize = 16;
-	lv_indev_data_t testData;
-	char showMsgBuff[50];
-	LCD_Clear(WHITE);
-	while(1)
-	{
-		xpt2046_read(&testData);
-		if(testData.state == LV_INDEV_STATE_PR)
-		{
-			sprintf(showMsgBuff,"Screen touch occurs! x = %d ; y = %d\r\n",testData.point.x,testData.point.y);
-			printf("%s",showMsgBuff);
-			LCD_ShowString_Line(line,fontSize,(uint8_t*)showMsgBuff);
-			line++;
-			if(line > (lcddev.ver_res/fontSize))
-			{
-				line = 0;
-			}
-		}
-	}
-}
+///* USER CODE BEGIN Application */
+//void TouchTask(void *argument)
+//{
+//	LCD_SetAllColor(WHITE,BLACK);
+//	uint8_t line = 0;
+//	uint16_t fontSize = 16;
+//	lv_indev_data_t testData;
+//	char showMsgBuff[50];
+//	LCD_Clear(WHITE);
+//	while(1)
+//	{
+//		xpt2046_read(&testData);
+//		if(testData.state == LV_INDEV_STATE_PR)
+//		{
+//			sprintf(showMsgBuff,"Screen touch occurs! x = %d ; y = %d\r\n",testData.point.x,testData.point.y);
+//			printf("%s",showMsgBuff);
+//			LCD_ShowString_Line(line,fontSize,(uint8_t*)showMsgBuff);
+//			line++;
+//			if(line > (lcddev.ver_res/fontSize))
+//			{
+//				line = 0;
+//			}
+//		}
+//	}
+//}
 
 		
 /* USER CODE END Application */
