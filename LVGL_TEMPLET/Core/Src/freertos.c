@@ -27,7 +27,7 @@
 /* USER CODE BEGIN Includes */
 //#include "lcd_function.h"
 //#include "XPT2046.h"
-#include "lvglApp.h"
+#include "LVGLTask.h"
 #include <stdio.h>
 /* USER CODE END Includes */
 
