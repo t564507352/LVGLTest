@@ -9,5 +9,5 @@
 
 
 
-extern void LVGLTask(void* params);
+extern void LVGLTask(void);
 #endif

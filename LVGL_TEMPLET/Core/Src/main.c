@@ -18,19 +18,21 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
 #include "dma.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 #include "fsmc.h"
-
+#include "lvglApp.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "lcd_function.h"
 #include "XPT2046.h"
+#include "lvgl.h"
+#include "lv_port_disp_template.h"
+#include "lv_port_indev_template.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,12 +53,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+extern TIM_HandleTypeDef htim6;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -100,20 +101,13 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
+  MX_TIM6_Init();
+	HAL_TIM_Base_Start_IT(&htim6);
   /* USER CODE BEGIN 2 */
 	HAL_Delay(1000);
+	LVGLTask();
   /* USER CODE END 2 */
 
-  /* Init scheduler */
-  osKernelInitialize();
-
-  /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
-
-  /* Start scheduler */
-  osKernelStart();
-
-  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -185,7 +179,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-
+	else if(htim->Instance == TIM6)
+	{
+		lv_tick_inc(1);
+	}
   /* USER CODE END Callback 1 */
 }
 
