@@ -19,7 +19,7 @@ void LVGLTask(void* params)
 		lv_port_indev_init();
 
 
-	
+		vTaskDelay(1000);
 		//	lv_demo_stress();
 
 		GUI_test();
