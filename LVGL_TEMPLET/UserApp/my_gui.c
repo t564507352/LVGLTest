@@ -3,92 +3,112 @@
 #include <stdio.h>
 
 
-const lv_font_t* g_font;
-lv_obj_t* g_curSpeed;
-uint8_t g_showSpeed = 0;
+#define scr_act_height() lv_obj_get_height(lv_scr_act())
+#define scr_act_width() lv_obj_get_width(lv_scr_act())
 
-lv_obj_t* g_topBtn;
-lv_obj_t* g_centerBtn;
-lv_obj_t* g_bottomBtn;
+const lv_font_t* g_font;
+
+lv_obj_t* coolSwitch;
+lv_obj_t* hotSwitch;
+
+
 
 static void test_cb(lv_event_t* event)
 {
     lv_obj_t* whichObj = lv_event_get_target(event);
-    if (whichObj == g_topBtn)
+    if (whichObj == coolSwitch)
     {
-        if (g_showSpeed < 100) g_showSpeed += 10;
-        printf("speed + \r\n");
+        if (lv_obj_has_state(hotSwitch, LV_STATE_CHECKED))//如果检测到制热开关状态是开的
+        {
+            lv_obj_clear_state(hotSwitch, LV_STATE_CHECKED);//清除制热开关的开状态
+        }
     }
-    else if (whichObj == g_centerBtn)
+    else if (whichObj == hotSwitch)
     {
-        g_showSpeed = 0;
-        printf("STOP \r\n");
-       
+        if (lv_obj_has_state(coolSwitch, LV_STATE_CHECKED))
+        {
+#if(LVGL_VERSION_MAJOR == 9)
+            lv_obj_set_state(coolSwitch, LV_STATE_CHECKED, false); /*只有9.0有，等同于下面的函数*/
+#else
+            lv_obj_clear_state(coolSwitch, LV_STATE_CHECKED);
+#endif
+        }
     }
-    else if (whichObj == g_bottomBtn)
-    {
-        if (g_showSpeed >= 10) g_showSpeed -= 10;
-        printf("speed - \r\n");
-    }
-    lv_label_set_text_fmt(g_curSpeed, "The Speed is %d RPM", g_showSpeed);
 }
 
+//顶部文字区域
 void top_label_create(void)
 {
-    g_curSpeed = lv_label_create(lv_scr_act());
-    lv_obj_align(g_curSpeed, LV_ALIGN_TOP_MID, 0, lv_obj_get_height(lv_scr_act())/10);
-    lv_label_set_text(g_curSpeed,"The Speed is 0 RPM");
-    lv_obj_set_style_text_align(g_curSpeed, LV_TEXT_ALIGN_CENTER, LV_STATE_DEFAULT);
-    lv_label_set_long_mode(g_curSpeed, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_obj_t* label = lv_label_create(lv_scr_act());
+    lv_obj_align(label, LV_ALIGN_CENTER ,0, - scr_act_height() * 9 / 20);
+    lv_obj_set_style_text_font(label, g_font, LV_PART_MAIN);
+    lv_label_set_text(label, "control center");
 }
 
-void top_btn_create(void)
+//制冷开关
+void cool_switch_create(void)
 {
+    lv_obj_t* base = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(base, scr_act_width() / 3, scr_act_width() / 3);
+    lv_obj_align(base, LV_ALIGN_CENTER, 0, - scr_act_height() / 4);
 
-    //设置按钮
-    g_topBtn = lv_btn_create(lv_scr_act());
-    lv_obj_set_size(g_topBtn, lv_obj_get_width(lv_scr_act()) / 3, lv_obj_get_height(lv_scr_act())/10);
-    lv_obj_align(g_topBtn, LV_ALIGN_TOP_MID, 0, lv_obj_get_height(lv_scr_act()) * 1 / 5);
-    lv_obj_set_style_bg_color(g_topBtn, lv_color_make(244, 212, 173), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_t* label = lv_label_create(g_topBtn);
-    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
-    lv_label_set_text(label, "SPEED +");
-    lv_obj_add_event_cb(g_topBtn, test_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_t* coolLabel = lv_label_create(base);
+    lv_obj_align(coolLabel, LV_ALIGN_TOP_MID, 0, lv_obj_get_width(base) * 1 / 5);
+    lv_label_set_text(coolLabel,"COOL");
+
+
+    coolSwitch = lv_switch_create(base);
+    lv_obj_align(coolSwitch, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_bg_color(coolSwitch, lv_color_make(129, 212, 250), LV_PART_KNOB | LV_EVENT_FOCUSED);
+    lv_obj_add_event_cb(coolSwitch, test_cb, LV_EVENT_CLICKED, NULL);
+
 }
 
-void center_btn_create(void)
+//制热开关
+void hot_switch_create(void)
 {
-    //设置按钮
-    g_centerBtn = lv_btn_create(lv_scr_act());
-    lv_obj_set_size(g_centerBtn, lv_obj_get_width(lv_scr_act()) * 2 / 5, lv_obj_get_height(lv_scr_act()) /10 );
-    lv_obj_align(g_centerBtn, LV_ALIGN_TOP_MID, 0, lv_obj_get_height(lv_scr_act()) * 2 / 5);
-    lv_obj_set_style_bg_color(g_centerBtn, lv_color_make(214, 60, 54), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_t* label = lv_label_create(g_centerBtn);
-    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
-    lv_label_set_text(label, "STOP");
-    lv_obj_add_event_cb(g_centerBtn, test_cb, LV_EVENT_CLICKED, NULL);
-    //lv_obj_add_flag(btn, LV_OBJ_FLAG_CHECKABLE);//增加UI状态切换的，本项目用不到
+    lv_obj_t* base = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(base, scr_act_width() / 3, scr_act_width() / 3);
+    lv_obj_align(base, LV_ALIGN_CENTER, 0, 0);
+
+    lv_obj_t* coolLabel = lv_label_create(base);
+    lv_obj_align(coolLabel, LV_ALIGN_TOP_MID, 0, lv_obj_get_width(base) * 1 / 5);
+    lv_label_set_text(coolLabel, "HOT");
+
+
+    hotSwitch = lv_switch_create(base);
+    lv_obj_align(hotSwitch, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_bg_color(hotSwitch, lv_color_make(243, 191, 228), LV_PART_KNOB | LV_EVENT_FOCUSED);//有PART部位,STATE状态，EVENT事件可以选择
+    lv_obj_set_style_bg_color(hotSwitch, lv_color_make(164, 43, 45), LV_PART_INDICATOR | LV_STATE_CHECKED );//指示器必须选择STATE，不然默认为默认状态，打开后就不生效了
+    lv_obj_add_event_cb(hotSwitch, test_cb, LV_EVENT_CLICKED, NULL);
 }
 
-void bottom_btn_create(void)
+//除湿开关
+void xeransis_switch_create(void)
 {
-    //设置按钮
-    g_bottomBtn = lv_btn_create(lv_scr_act());
-    lv_obj_set_size(g_bottomBtn, lv_obj_get_width(lv_scr_act()) / 3, lv_obj_get_height(lv_scr_act()) / 10);
-    lv_obj_align(g_bottomBtn, LV_ALIGN_TOP_MID, 0, lv_obj_get_height(lv_scr_act()) * 3 / 5);
-    lv_obj_set_style_bg_color(g_bottomBtn, lv_color_make(169, 182, 82), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_t* label = lv_label_create(g_bottomBtn);
-    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
-    lv_label_set_text(label, "SPEED -");
-    lv_obj_add_event_cb(g_bottomBtn, test_cb, LV_EVENT_CLICKED, NULL);
+    //创建基础对象
+    lv_obj_t* base = lv_obj_create(lv_scr_act());
+    //设置大小均为屏幕宽度的三分之一
+    lv_obj_set_size(base, scr_act_width() / 3, scr_act_width() / 3);
+    //设置中心对其，向上偏移
+    lv_obj_align(base, LV_ALIGN_CENTER, 0, scr_act_height() / 4);
+
+    lv_obj_t* coolLabel = lv_label_create(base);
+    lv_obj_align(coolLabel, LV_ALIGN_TOP_MID, 0, lv_obj_get_width(base) * 1 / 5);
+    lv_label_set_text(coolLabel, "xeransis");
+
+
+    lv_obj_t* xeransisSwitch = lv_switch_create(base);
+    lv_obj_align(xeransisSwitch, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_state(xeransisSwitch, LV_STATE_CHECKED | LV_STATE_DISABLED);//添加LV_STATE_DISABLED后就不可编辑了
 }
 
 void GUI_test(void)
 {
     //获取活动屏幕宽高，选择字体
 
-    int32_t scr_act_width = lv_obj_get_width(lv_scr_act());
-    int32_t scr_act_hight = lv_obj_get_height(lv_scr_act());
+    int32_t scr_act_width = scr_act_width();
+    int32_t scr_act_height = scr_act_height();
     if (scr_act_width <= 320)
     {
         g_font = &lv_font_montserrat_14;
@@ -102,8 +122,8 @@ void GUI_test(void)
         g_font = &lv_font_montserrat_22;
     }
     top_label_create();
-    top_btn_create();
-    center_btn_create();
-    bottom_btn_create();
+    cool_switch_create();
+    hot_switch_create();
+    xeransis_switch_create();
     return;
 }
