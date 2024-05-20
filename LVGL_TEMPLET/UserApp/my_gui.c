@@ -2,87 +2,108 @@
 #include "lvgl.h"
 #include <stdio.h>
 
-int32_t scr_act_width;
-int32_t scr_act_hight;
 
+const lv_font_t* g_font;
+lv_obj_t* g_curSpeed;
+uint8_t g_showSpeed = 0;
 
+lv_obj_t* g_topBtn;
+lv_obj_t* g_centerBtn;
+lv_obj_t* g_bottomBtn;
 
 static void test_cb(lv_event_t* event)
 {
-   
+    lv_obj_t* whichObj = lv_event_get_target(event);
+    if (whichObj == g_topBtn)
+    {
+        if (g_showSpeed < 100) g_showSpeed += 10;
+        printf("speed + \r\n");
+    }
+    else if (whichObj == g_centerBtn)
+    {
+        g_showSpeed = 0;
+        printf("STOP \r\n");
+       
+    }
+    else if (whichObj == g_bottomBtn)
+    {
+        if (g_showSpeed >= 10) g_showSpeed -= 10;
+        printf("speed - \r\n");
+    }
+    lv_label_set_text_fmt(g_curSpeed, "The Speed is %d RPM", g_showSpeed);
 }
 
+void top_label_create(void)
+{
+    g_curSpeed = lv_label_create(lv_scr_act());
+    lv_obj_align(g_curSpeed, LV_ALIGN_TOP_MID, 0, lv_obj_get_height(lv_scr_act())/10);
+    lv_label_set_text(g_curSpeed,"The Speed is 0 RPM");
+    lv_obj_set_style_text_align(g_curSpeed, LV_TEXT_ALIGN_CENTER, LV_STATE_DEFAULT);
+    lv_label_set_long_mode(g_curSpeed, LV_LABEL_LONG_SCROLL_CIRCULAR);
+}
+
+void top_btn_create(void)
+{
+
+    //设置按钮
+    g_topBtn = lv_btn_create(lv_scr_act());
+    lv_obj_set_size(g_topBtn, lv_obj_get_width(lv_scr_act()) / 3, lv_obj_get_height(lv_scr_act())/10);
+    lv_obj_align(g_topBtn, LV_ALIGN_TOP_MID, 0, lv_obj_get_height(lv_scr_act()) * 1 / 5);
+    lv_obj_set_style_bg_color(g_topBtn, lv_color_make(244, 212, 173), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_t* label = lv_label_create(g_topBtn);
+    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+    lv_label_set_text(label, "SPEED +");
+    lv_obj_add_event_cb(g_topBtn, test_cb, LV_EVENT_CLICKED, NULL);
+}
+
+void center_btn_create(void)
+{
+    //设置按钮
+    g_centerBtn = lv_btn_create(lv_scr_act());
+    lv_obj_set_size(g_centerBtn, lv_obj_get_width(lv_scr_act()) * 2 / 5, lv_obj_get_height(lv_scr_act()) /10 );
+    lv_obj_align(g_centerBtn, LV_ALIGN_TOP_MID, 0, lv_obj_get_height(lv_scr_act()) * 2 / 5);
+    lv_obj_set_style_bg_color(g_centerBtn, lv_color_make(214, 60, 54), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_t* label = lv_label_create(g_centerBtn);
+    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+    lv_label_set_text(label, "STOP");
+    lv_obj_add_event_cb(g_centerBtn, test_cb, LV_EVENT_CLICKED, NULL);
+    //lv_obj_add_flag(btn, LV_OBJ_FLAG_CHECKABLE);//增加UI状态切换的，本项目用不到
+}
+
+void bottom_btn_create(void)
+{
+    //设置按钮
+    g_bottomBtn = lv_btn_create(lv_scr_act());
+    lv_obj_set_size(g_bottomBtn, lv_obj_get_width(lv_scr_act()) / 3, lv_obj_get_height(lv_scr_act()) / 10);
+    lv_obj_align(g_bottomBtn, LV_ALIGN_TOP_MID, 0, lv_obj_get_height(lv_scr_act()) * 3 / 5);
+    lv_obj_set_style_bg_color(g_bottomBtn, lv_color_make(169, 182, 82), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_t* label = lv_label_create(g_bottomBtn);
+    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+    lv_label_set_text(label, "SPEED -");
+    lv_obj_add_event_cb(g_bottomBtn, test_cb, LV_EVENT_CLICKED, NULL);
+}
 
 void GUI_test(void)
 {
-    //获取活动屏幕宽高
-    const lv_font_t* font;
-    scr_act_width = lv_obj_get_width(lv_scr_act());
-    scr_act_hight = lv_obj_get_height(lv_scr_act());
+    //获取活动屏幕宽高，选择字体
+
+    int32_t scr_act_width = lv_obj_get_width(lv_scr_act());
+    int32_t scr_act_hight = lv_obj_get_height(lv_scr_act());
     if (scr_act_width <= 320)
     {
-        font = &lv_font_montserrat_14;
+        g_font = &lv_font_montserrat_14;
     }
     else if (scr_act_width <= 480)
     {
-        font = &lv_font_montserrat_18;
+        g_font = &lv_font_montserrat_18;
     }
     else
     {
-        font = &lv_font_montserrat_22;
+        g_font = &lv_font_montserrat_22;
     }
-   
-    //设置背景图层以及阴影
-    lv_obj_t* fatherShadow = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(fatherShadow, scr_act_width - 20, scr_act_hight - 20);
-    lv_obj_set_style_bg_color(fatherShadow, lv_color_make(174, 66, 125), LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(fatherShadow, LV_OPA_50, LV_STATE_DEFAULT| LV_PART_MAIN);
-
-    lv_obj_t* father = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(father, scr_act_width - 20, scr_act_hight - 20);
-    lv_obj_set_align(father, LV_ALIGN_CENTER);
-    lv_obj_set_style_bg_color(father, lv_color_make(237, 80, 138), LV_STATE_DEFAULT);
-
-    lv_obj_align_to(fatherShadow, father, LV_ALIGN_CENTER, 5, 5);
-
-    //添加三个label
-    int32_t father_width = lv_obj_get_width(father);
-    int32_t father_hight = lv_obj_get_height(father);
-
-    lv_obj_t* topLabel = lv_label_create(father);
-    lv_obj_set_size(topLabel, father_width/2, father_hight/3);
-    lv_obj_set_align(topLabel, LV_ALIGN_TOP_MID);
-    lv_obj_set_style_bg_color(topLabel, lv_color_make(92, 203, 176), LV_PART_MAIN);//不知道为啥没生效
-    lv_obj_set_style_opa(topLabel, LV_OPA_COVER, LV_PART_MAIN);
-    lv_obj_set_style_text_font(topLabel, font, LV_PART_MAIN);
-    lv_obj_set_style_text_align(topLabel, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
-    lv_label_set_long_mode(topLabel ,LV_LABEL_LONG_SCROLL_CIRCULAR);
-    lv_label_set_text(topLabel, "qianqian I LOVE YOU,you are my baby");
-
-    lv_obj_t* centerLabel = lv_label_create(father);
-    lv_obj_set_size(centerLabel, father_width/2, father_hight/3);
-    lv_obj_set_align(centerLabel, LV_ALIGN_CENTER);
-    lv_obj_set_style_text_font(centerLabel, font, LV_PART_MAIN);
-    lv_obj_set_style_text_align(centerLabel, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
-    lv_obj_set_style_text_color(centerLabel, lv_color_make(96, 203, 175), LV_PART_MAIN);
-    lv_label_set_long_mode(centerLabel, LV_LABEL_LONG_DOT);
-    lv_label_set_text_fmt(centerLabel, "qianqian I LOVE YOU %d years,you are my baby \n from fmt funtion" , 10000);
-
-
-
-
-
-
-    lv_obj_t* bottomLabel = lv_label_create(father);
-    lv_obj_set_size(bottomLabel, father_width / 2, father_hight / 3);
-    lv_obj_set_align(bottomLabel, LV_ALIGN_BOTTOM_MID);
-    lv_obj_set_style_text_font(bottomLabel, font, LV_PART_MAIN);
-    lv_obj_set_style_text_align(bottomLabel, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
-    lv_label_set_long_mode(bottomLabel, LV_LABEL_LONG_DOT);
-#if (LVGL_VERSION_MAJOR != 9)
-    lv_label_set_recolor(bottomLabel, true);
-#endif
-    lv_label_set_text(bottomLabel, "qianqian #ff0000 I LOVE YOU,you are my baby# ");
-
+    top_label_create();
+    top_btn_create();
+    center_btn_create();
+    bottom_btn_create();
     return;
 }
