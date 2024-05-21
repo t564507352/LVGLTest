@@ -6,101 +6,99 @@
 #define scr_act_height() lv_obj_get_height(lv_scr_act())
 #define scr_act_width() lv_obj_get_width(lv_scr_act())
 
+#define PRICECOLA               4
+#define PRICECHICKEN            8
+#define PRICEHAMBURGER          12
+#define PRICETABLEWARE          1
+
+
 const lv_font_t* g_font;
-
-lv_obj_t* coolSwitch;
-lv_obj_t* hotSwitch;
-
-
+uint32_t g_product = 1;
+lv_obj_t* g_priceLabel;
+lv_obj_t* g_checkbox1;
+lv_obj_t* g_checkbox2;
+lv_obj_t* g_checkbox3;
+lv_obj_t* g_checkbox4;
 
 static void test_cb(lv_event_t* event)
 {
-    lv_obj_t* whichObj = lv_event_get_target(event);
-    if (whichObj == coolSwitch)
+    //获取事件对象
+    lv_obj_t* whiceObj = lv_event_get_target(event);
+    //判断并计算价格
+    if (whiceObj == g_checkbox1)
     {
-        if (lv_obj_has_state(hotSwitch, LV_STATE_CHECKED))//如果检测到制热开关状态是开的
-        {
-            lv_obj_clear_state(hotSwitch, LV_STATE_CHECKED);//清除制热开关的开状态
-        }
+        lv_obj_has_state(whiceObj, LV_STATE_CHECKED) ? (g_product += PRICECOLA) : (g_product -= PRICECOLA);
     }
-    else if (whichObj == hotSwitch)
+    else if (whiceObj == g_checkbox2)
     {
-        if (lv_obj_has_state(coolSwitch, LV_STATE_CHECKED))
-        {
-#if(LVGL_VERSION_MAJOR == 9)
-            lv_obj_set_state(coolSwitch, LV_STATE_CHECKED, false); /*只有9.0有，等同于下面的函数*/
-#else
-            lv_obj_clear_state(coolSwitch, LV_STATE_CHECKED);
-#endif
-        }
+        lv_obj_has_state(whiceObj, LV_STATE_CHECKED)? (g_product+= PRICECHICKEN): (g_product -= PRICECHICKEN);
     }
+    else if (whiceObj == g_checkbox3)
+    {
+        lv_obj_has_state(whiceObj, LV_STATE_CHECKED) ? (g_product += PRICEHAMBURGER) : (g_product -= PRICEHAMBURGER);
+    }
+    //重新显示价格
+    lv_label_set_text_fmt(g_priceLabel, "total price: %d $ ", g_product);
 }
 
-//顶部文字区域
-void top_label_create(void)
-{
-    lv_obj_t* label = lv_label_create(lv_scr_act());
-    lv_obj_align(label, LV_ALIGN_CENTER ,0, - scr_act_height() * 9 / 20);
-    lv_obj_set_style_text_font(label, g_font, LV_PART_MAIN);
-    lv_label_set_text(label, "control center");
-}
 
-//制冷开关
-void cool_switch_create(void)
+void show_label(void)
 {
+    // 设置顶部标题
+    lv_obj_t* titleLabel = lv_label_create(lv_scr_act());
+    lv_obj_align(titleLabel, LV_ALIGN_CENTER, 0, -scr_act_height()/3);
+    lv_obj_set_style_text_font(titleLabel, g_font, LV_PART_MAIN);
+    lv_label_set_long_mode(titleLabel, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_text(titleLabel,"Please select product: ");
+
+    //设置底部计价板
+    g_priceLabel = lv_label_create(lv_scr_act());
+    lv_obj_align(g_priceLabel, LV_ALIGN_CENTER, 0, scr_act_height() / 3);
+    lv_obj_set_style_text_font(g_priceLabel, g_font, LV_PART_MAIN);
+    lv_label_set_long_mode(g_priceLabel, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_text(g_priceLabel, "total price: 0 $ ");
+}
+void show_checkbox(void)
+{
+    char ShowTextBuff[20];
+    //添加底部基础obj
     lv_obj_t* base = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(base, scr_act_width() / 3, scr_act_width() / 3);
-    lv_obj_align(base, LV_ALIGN_CENTER, 0, - scr_act_height() / 4);
-
-    lv_obj_t* coolLabel = lv_label_create(base);
-    lv_obj_align(coolLabel, LV_ALIGN_TOP_MID, 0, lv_obj_get_width(base) * 1 / 5);
-    lv_label_set_text(coolLabel,"COOL");
+    lv_obj_set_size(base, scr_act_width(), scr_act_height() / 2);
+    lv_obj_align(base, LV_ALIGN_CENTER, 0 ,0);
 
 
-    coolSwitch = lv_switch_create(base);
-    lv_obj_align(coolSwitch, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_set_style_bg_color(coolSwitch, lv_color_make(129, 212, 250), LV_PART_KNOB | LV_EVENT_FOCUSED);
-    lv_obj_add_event_cb(coolSwitch, test_cb, LV_EVENT_CLICKED, NULL);
-
-}
-
-//制热开关
-void hot_switch_create(void)
-{
-    lv_obj_t* base = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(base, scr_act_width() / 3, scr_act_width() / 3);
-    lv_obj_align(base, LV_ALIGN_CENTER, 0, 0);
-
-    lv_obj_t* coolLabel = lv_label_create(base);
-    lv_obj_align(coolLabel, LV_ALIGN_TOP_MID, 0, lv_obj_get_width(base) * 1 / 5);
-    lv_label_set_text(coolLabel, "HOT");
+    //创建4个checkbox
+    g_checkbox1 = lv_checkbox_create(base);
+    lv_obj_align(g_checkbox1, LV_ALIGN_TOP_LEFT, 0, lv_obj_get_height(base)/8);
+    //设置复选框后面的文字与复选框的间距
+    lv_obj_set_style_pad_column(g_checkbox1, 20, LV_STATE_DEFAULT);
+    sprintf(ShowTextBuff, "cola   $ %d", PRICECOLA);
+    lv_checkbox_set_text(g_checkbox1, (const char*)ShowTextBuff);
+    //添加事件，事件类型为“值改变”触发
+    lv_obj_add_event_cb(g_checkbox1, test_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
 
-    hotSwitch = lv_switch_create(base);
-    lv_obj_align(hotSwitch, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_set_style_bg_color(hotSwitch, lv_color_make(243, 191, 228), LV_PART_KNOB | LV_EVENT_FOCUSED);//有PART部位,STATE状态，EVENT事件可以选择
-    lv_obj_set_style_bg_color(hotSwitch, lv_color_make(164, 43, 45), LV_PART_INDICATOR | LV_STATE_CHECKED );//指示器必须选择STATE，不然默认为默认状态，打开后就不生效了
-    lv_obj_add_event_cb(hotSwitch, test_cb, LV_EVENT_CLICKED, NULL);
-}
+    g_checkbox2 = lv_checkbox_create(base);
+    lv_obj_align_to(g_checkbox2, g_checkbox1, LV_ALIGN_OUT_BOTTOM_LEFT, 0, lv_obj_get_height(base) / 10);
+    lv_obj_set_style_pad_column(g_checkbox1, 20, LV_STATE_DEFAULT);
+    sprintf(ShowTextBuff, "fried chicken   $ %d", PRICECHICKEN);
+    lv_checkbox_set_text(g_checkbox2, (const char*)ShowTextBuff);
+    lv_obj_add_event_cb(g_checkbox2, test_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
-//除湿开关
-void xeransis_switch_create(void)
-{
-    //创建基础对象
-    lv_obj_t* base = lv_obj_create(lv_scr_act());
-    //设置大小均为屏幕宽度的三分之一
-    lv_obj_set_size(base, scr_act_width() / 3, scr_act_width() / 3);
-    //设置中心对其，向上偏移
-    lv_obj_align(base, LV_ALIGN_CENTER, 0, scr_act_height() / 4);
+    g_checkbox3 = lv_checkbox_create(base);
+    lv_obj_align_to(g_checkbox3, g_checkbox2, LV_ALIGN_OUT_BOTTOM_LEFT, 0, lv_obj_get_height(base) / 10);
+    lv_obj_set_style_pad_column(g_checkbox1, 20, LV_STATE_DEFAULT);
+    sprintf(ShowTextBuff, "hamburger   $ %d", PRICEHAMBURGER);
+    lv_checkbox_set_text(g_checkbox3, (const char*)ShowTextBuff);
+    lv_obj_add_event_cb(g_checkbox3, test_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
-    lv_obj_t* coolLabel = lv_label_create(base);
-    lv_obj_align(coolLabel, LV_ALIGN_TOP_MID, 0, lv_obj_get_width(base) * 1 / 5);
-    lv_label_set_text(coolLabel, "xeransis");
-
-
-    lv_obj_t* xeransisSwitch = lv_switch_create(base);
-    lv_obj_align(xeransisSwitch, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_add_state(xeransisSwitch, LV_STATE_CHECKED | LV_STATE_DISABLED);//添加LV_STATE_DISABLED后就不可编辑了
+    g_checkbox4 = lv_checkbox_create(base);
+    lv_obj_align_to(g_checkbox4, g_checkbox3, LV_ALIGN_OUT_BOTTOM_LEFT, 0, lv_obj_get_height(base) / 10);
+    lv_obj_set_style_pad_column(g_checkbox1, 20, LV_STATE_DEFAULT);
+    sprintf(ShowTextBuff, "tableware   $ %d", PRICETABLEWARE);
+    lv_checkbox_set_text(g_checkbox4, (const char*)ShowTextBuff);
+    //添加默认状态，不可操作，并选中
+    lv_obj_add_state(g_checkbox4, LV_STATE_DISABLED | LV_STATE_CHECKED);
 }
 
 void GUI_test(void)
@@ -121,9 +119,7 @@ void GUI_test(void)
     {
         g_font = &lv_font_montserrat_22;
     }
-    top_label_create();
-    cool_switch_create();
-    hot_switch_create();
-    xeransis_switch_create();
+    show_label();
+    show_checkbox();
     return;
 }
