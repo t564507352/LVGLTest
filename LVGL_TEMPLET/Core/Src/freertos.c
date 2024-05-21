@@ -52,7 +52,7 @@
 osThreadId_t LVGLTaskHandle;
 const osThreadAttr_t LVGLTask_attributes = {
   .name = "LVGLTask",
-  .stack_size = 512 * 4,
+  .stack_size = (512 * 4 - 256),
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -61,7 +61,7 @@ const osThreadAttr_t LVGLTask_attributes = {
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 56,
+  .stack_size = 128,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -127,10 +127,12 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+	uint8_t i;
   /* Infinite loop */
-  for(;;)
+  while(1)
   {
-		
+		i++;
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 		vTaskDelay(1000);
   }
   /* USER CODE END StartDefaultTask */
