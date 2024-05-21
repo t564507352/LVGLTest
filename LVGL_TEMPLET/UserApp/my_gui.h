@@ -1,10 +1,5 @@
-﻿#ifndef __MY_GUI_H_
+#ifndef __MY_GUI_H_
 #define __MY_GUI_H_
-
-
-
-
-
 
 
 

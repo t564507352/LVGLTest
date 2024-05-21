@@ -61,7 +61,7 @@ const osThreadAttr_t LVGLTask_attributes = {
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .stack_size = 56,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -102,7 +102,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  //defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -130,8 +130,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-		printf("DefaultTask\r\n");
-		//LCD_ShowString_Line(0,16,(uint8_t*)&"DefaultTask");
+		
 		vTaskDelay(1000);
   }
   /* USER CODE END StartDefaultTask */

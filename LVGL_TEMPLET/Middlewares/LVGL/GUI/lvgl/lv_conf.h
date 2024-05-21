@@ -19,6 +19,11 @@
 
 #include <stdint.h>
 
+//bentong add
+/*====================
+   OS SETTINGS
+ *====================*/
+#define USE_FREERTOS 1
 /*====================
    COLOR SETTINGS
  *====================*/
