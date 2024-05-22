@@ -56,6 +56,8 @@ const osThreadAttr_t LVGLTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+QueueHandle_t LED_Frequency;
+
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -127,13 +129,18 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
-	uint8_t i;
+	static uint8_t Frequency ;
+	static uint16_t actualFrequency = 1010;
+	LED_Frequency = xQueueCreate( 40, 1 );
   /* Infinite loop */
   while(1)
   {
-		i++;
+		if(xQueueReceive(LED_Frequency, &Frequency, 1))
+		{
+			actualFrequency = (101 - Frequency) * 10;
+		}
 		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-		vTaskDelay(1000);
+		vTaskDelay(actualFrequency);
   }
   /* USER CODE END StartDefaultTask */
 }

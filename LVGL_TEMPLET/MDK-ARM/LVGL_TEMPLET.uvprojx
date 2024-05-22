@@ -1651,9 +1651,9 @@
               <FilePath>..\UserApp\my_gui.c</FilePath>
             </File>
             <File>
-              <FileName>barTimerTask.c</FileName>
+              <FileName>TimerTask.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\UserApp\barTimerTask.c</FilePath>
+              <FilePath>..\UserApp\TimerTask.c</FilePath>
             </File>
           </Files>
         </Group>
