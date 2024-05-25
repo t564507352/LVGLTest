@@ -47,7 +47,7 @@ static void test_cb(lv_event_t* event)
     else if (obj == g_slider2)//LED频率
     {
        ledFQ = lv_slider_get_value(obj);
-#if USE_FREERTOS
+#if  0 /*USE_FREERTOS*/
 		//发送给默认任务中的点灯中的队列，控制亮灭频率
 	   static uint8_t pre_ledFQ = 0;
 		//避免发送太频繁

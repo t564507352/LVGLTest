@@ -25,7 +25,7 @@
 #include "usart.h"
 #include "gpio.h"
 #include "fsmc.h"
-
+#include "LVGLTask.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
@@ -100,6 +100,7 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
+
   /* USER CODE BEGIN 2 */
 	HAL_Delay(1000);
   /* USER CODE END 2 */
