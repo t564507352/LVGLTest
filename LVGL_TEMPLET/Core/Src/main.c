@@ -102,7 +102,7 @@ int main(void)
   MX_SPI1_Init();
 
   /* USER CODE BEGIN 2 */
-	HAL_Delay(1000);
+  HAL_Delay(1000);
   /* USER CODE END 2 */
 
   /* Init scheduler */

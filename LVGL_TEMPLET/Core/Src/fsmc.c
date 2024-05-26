@@ -22,7 +22,7 @@
 #include "fsmc.h"
 
 /* USER CODE BEGIN 0 */
-
+static FSMC_NORSRAM_TimingTypeDef   hfsmc_rw;
 /* USER CODE END 0 */
 
 SRAM_HandleTypeDef hsram4;
@@ -31,7 +31,36 @@ SRAM_HandleTypeDef hsram4;
 void MX_FSMC_Init(void)
 {
   /* USER CODE BEGIN FSMC_Init 0 */
+    hsram4.Instance = FSMC_NORSRAM_DEVICE;
+    hsram4.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
 
+    hsram4.Init.NSBank               = FSMC_NORSRAM_BANK4;     				// 使用NE4
+    hsram4.Init.DataAddressMux       = FSMC_DATA_ADDRESS_MUX_DISABLE; 	    // 地址/数据线不复用
+    hsram4.Init.MemoryType           = FSMC_MEMORY_TYPE_SRAM;   				// SRAM
+    hsram4.Init.MemoryDataWidth      = FSMC_NORSRAM_MEM_BUS_WIDTH_16; 	    // 16位数据宽度
+    hsram4.Init.BurstAccessMode      = FSMC_BURST_ACCESS_MODE_DISABLE;       // 是否使能突发访问,仅对同步突发存储器有效,此处未用到
+    hsram4.Init.WaitSignalPolarity   = FSMC_WAIT_SIGNAL_POLARITY_LOW;        // 等待信号的极性,仅在突发模式访问下有用
+    hsram4.Init.WaitSignalActive     = FSMC_WAIT_TIMING_BEFORE_WS;   	    // 存储器是在等待周期之前的一个时钟周期还是等待周期期间使能NWAIT
+    hsram4.Init.WriteOperation       = FSMC_WRITE_OPERATION_ENABLE;    	    // 存储器写使能
+    hsram4.Init.WaitSignal           = FSMC_WAIT_SIGNAL_DISABLE;           	// 等待使能位,此处未用到
+    hsram4.Init.ExtendedMode         = FSMC_EXTENDED_MODE_DISABLE;        	// 读写使用相同的时序
+    hsram4.Init.AsynchronousWait     = FSMC_ASYNCHRONOUS_WAIT_DISABLE;	    // 是否使能同步传输模式下的等待信号,此处未用到
+    hsram4.Init.WriteBurst           = FSMC_WRITE_BURST_DISABLE;           	// 禁止突发写
+    
+    hfsmc_rw.AddressSetupTime      = 0x00;
+    hfsmc_rw.AddressHoldTime       = 0x00;
+    hfsmc_rw.DataSetupTime         = 0x08;
+    hfsmc_rw.BusTurnAroundDuration = 0x00;
+    hfsmc_rw.CLKDivision           = 0x00;
+    hfsmc_rw.DataLatency           = 0x00;
+    hfsmc_rw.AccessMode            = FSMC_ACCESS_MODE_A;
+    
+    
+    if(HAL_SRAM_Init(&hsram4, &hfsmc_rw, &hfsmc_rw) != HAL_OK)
+    {
+        Error_Handler();
+    }    
+#if 0	
   /* USER CODE END FSMC_Init 0 */
 
   FSMC_NORSRAM_TimingTypeDef Timing = {0};
@@ -87,7 +116,7 @@ void MX_FSMC_Init(void)
   __HAL_AFIO_FSMCNADV_DISCONNECTED();
 
   /* USER CODE BEGIN FSMC_Init 2 */
-
+#endif
   /* USER CODE END FSMC_Init 2 */
 }
 
@@ -95,7 +124,44 @@ static uint32_t FSMC_Initialized = 0;
 
 static void HAL_FSMC_MspInit(void){
   /* USER CODE BEGIN FSMC_MspInit 0 */
+	GPIO_InitTypeDef    GPIO_InitStruct = {0};
+    
+    __HAL_RCC_FSMC_CLK_ENABLE();
+    GPIOC_CLK_EN();
+    GPIOD_CLK_EN();
+    GPIOE_CLK_EN();
+    GPIOF_CLK_EN();
+    GPIOG_CLK_EN();
+    
+    
+    GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull      = GPIO_PULLUP;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+    
+    GPIO_InitStruct.Pin = LCD_RST_PIN;
+    HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+    
 
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+	
+	// PGx
+    GPIO_InitStruct.Pin = LCD_CS_PIN;
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+	
+    // PDx
+    GPIO_InitStruct.Pin = LCD_GPIOD_PIN;
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+    
+    // PEx
+    GPIO_InitStruct.Pin = LCD_GPIOE_PIN;
+    HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+	
+	
+	
+	
+#if 0
   /* USER CODE END FSMC_MspInit 0 */
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if (FSMC_Initialized) {
@@ -165,6 +231,7 @@ static void HAL_FSMC_MspInit(void){
 	//CUBEMX配置FSMC必须要配置一个addr口，这里不需要，也不好更改，更改了一旦保存就又填上了，这里deinit一下
   HAL_GPIO_DeInit(GPIOF, GPIO_PIN_0);
 	__HAL_RCC_GPIOF_CLK_DISABLE();
+#endif
   /* USER CODE END FSMC_MspInit 1 */
 }
 

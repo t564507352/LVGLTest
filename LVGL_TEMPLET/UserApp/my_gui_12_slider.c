@@ -1,4 +1,4 @@
-#include "my_gui.h"
+﻿#include "my_gui.h"
 #include "lvgl.h"
 #include <stdio.h>
 
@@ -47,16 +47,10 @@ static void test_cb(lv_event_t* event)
     else if (obj == g_slider2)//LED频率
     {
        ledFQ = lv_slider_get_value(obj);
-#if  0 /*USE_FREERTOS*/
+#if USE_FREERTOS
 		//发送给默认任务中的点灯中的队列，控制亮灭频率
-	   static uint8_t pre_ledFQ = 0;
-		//避免发送太频繁
-	   if(abs(ledFQ - pre_ledFQ) > 10)
-	   {
-		   extern QueueHandle_t LED_Frequency;
-		   xQueueSend(LED_Frequency,&ledFQ,100);		   
-	   }
-	   pre_ledFQ = ledFQ;
+	   extern QueueHandle_t LED_Frequency;
+	   xQueueSend(LED_Frequency,&ledFQ,1);		   
 #endif		
     }
     printf("brightness : %d%% \r\nLED frequency : %d%%", brightness, ledFQ);
@@ -71,7 +65,7 @@ void show_slider(void)
     g_slider1 =  lv_slider_create(lv_scr_act());
     lv_obj_align(g_slider1, LV_ALIGN_CENTER, -scr_act_width() / 40, 0);
     //设置取值范围
-    lv_slider_set_range(g_slider1, 0, 100);
+    lv_slider_set_range(g_slider1, 10, 100);
     //设置默认值
     lv_slider_set_value(g_slider1, 90, LV_ANIM_ON);
     //设置滑块模式

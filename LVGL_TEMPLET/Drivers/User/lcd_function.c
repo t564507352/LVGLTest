@@ -601,7 +601,7 @@ void LCD_Brightness(uint8_t value)
 /********** LCD初始化函数定义 **********/
 void LCD_Init(void)
 {
-		LCD_Brightness(90);
+	LCD_Brightness(90);
     LCD_BackLed_Ctrl(ENABLE);
     LCD_Rest();
     LCD_GetDevID();

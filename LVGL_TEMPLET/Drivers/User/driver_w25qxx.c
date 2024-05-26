@@ -15,12 +15,10 @@
 #include "driver_w25qxx.h"
 #include "driver_timer.h"
 
-extern SPI_HandleTypeDef hspi1;
 // 函数重定义
-#define W25_HSPI								hspi1
 #define W25_CS_ENABLE()         {W25_CS(0),us_timer_delay(10);}
 #define W25_CS_DISABLE()        {W25_CS(1),us_timer_delay(10);}
-#define W25_RW_Byte(data)       SPI_WriteReadByte(&W25_HSPI,data)
+#define W25_RW_Byte(data)       SPI_WriteReadByte(data)
 
 /*
  *  函数名：uint32_t FLASH_ReadDeviceID(void)
