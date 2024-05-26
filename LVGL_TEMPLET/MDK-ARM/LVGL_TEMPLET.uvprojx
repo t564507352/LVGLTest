@@ -1655,6 +1655,11 @@
               <FileType>1</FileType>
               <FilePath>..\UserApp\TimerTask.c</FilePath>
             </File>
+            <File>
+              <FileName>img_marry.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserApp\img_marry.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
