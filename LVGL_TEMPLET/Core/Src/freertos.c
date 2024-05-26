@@ -104,7 +104,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+    defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -129,18 +129,13 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
-	static uint8_t Frequency ;
-	static uint16_t actualFrequency = 1010;
+	static uint8_t Frequency = 10 ;
 	LED_Frequency = xQueueCreate( 40, 1 );
   /* Infinite loop */
   while(1)
   {
-		if(xQueueReceive(LED_Frequency, &Frequency, 1))
-		{
-			actualFrequency = (101 - Frequency) * 10;
-		}
+		if(!xQueueReceive(LED_Frequency, &Frequency, (110 - Frequency)*10))
 		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-		vTaskDelay(actualFrequency);
   }
   /* USER CODE END StartDefaultTask */
 }
