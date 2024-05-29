@@ -111,8 +111,8 @@
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
           <SimDllArguments>-REMAP</SimDllArguments>
-          <SimDlgDll>DCM.DLL</SimDlgDll>
-          <SimDlgDllArguments>-pCM3</SimDlgDllArguments>
+          <SimDlgDll>DARMSTM.DLL</SimDlgDll>
+          <SimDlgDllArguments> -pSTM32F103ZE</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
           <TargetDllArguments></TargetDllArguments>
           <TargetDlgDll>TCM.DLL</TargetDlgDll>
@@ -1656,9 +1656,19 @@
               <FilePath>..\UserApp\TimerTask.c</FilePath>
             </File>
             <File>
-              <FileName>img_marry.c</FileName>
+              <FileName>img_arefaction.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\UserApp\img_marry.c</FilePath>
+              <FilePath>..\UserApp\img\img_arefaction.c</FilePath>
+            </File>
+            <File>
+              <FileName>img_cool.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserApp\img\img_cool.c</FilePath>
+            </File>
+            <File>
+              <FileName>img_hot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserApp\img\img_hot.c</FilePath>
             </File>
           </Files>
         </Group>

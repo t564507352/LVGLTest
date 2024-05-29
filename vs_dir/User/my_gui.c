@@ -1,4 +1,4 @@
-#include "my_gui.h"
+﻿#include "my_gui.h"
 #include "lvgl.h"
 #include <stdio.h>
 #include "math.h"
@@ -63,48 +63,48 @@ typedef enum {
 
 void show_tabview(void)
 {
-	//初始化选项卡零件结构体
+    //初始化选项卡零件结构体
     _tabviewAttr tv;
     tv.base = lv_scr_act();
-	//创建选项卡，设置字体
+    //创建选项卡，设置字体
     tv.thisTabview = lv_tabview_create(tv.base, LV_DIR_TOP, scr_act_height() / 10);
     lv_obj_set_style_text_font(tv.thisTabview, g_font, LV_PART_MAIN);
 
-	//添加tab1
+    //添加tab1
     tv.tab[CONTROL] = lv_tabview_add_tab(tv.thisTabview, "control center");
-	//创建tab1的label1
+    //创建tab1的label1
     tv.label[CONTROL_OPTION] = lv_label_create(tv.tab[CONTROL]);
     lv_obj_align(tv.label[CONTROL_OPTION], LV_ALIGN_CENTER, 0, 0);
     lv_label_set_text_fmt(tv.label[CONTROL_OPTION], "Here you put the \ncontrol options button");
     tv.label[CONTROL_TIPS] = lv_label_create(tv.tab[CONTROL]);
-	//创建tab1的label2
+    //创建tab1的label2
     lv_obj_align(tv.label[CONTROL_TIPS], LV_ALIGN_BOTTOM_MID, 0, 0);
     lv_label_set_text(tv.label[CONTROL_TIPS], "Here you put the \ncontrol tips");
 
-	//添加tab2
+    //添加tab2
     tv.tab[MESSAGE] = lv_tabview_add_tab(tv.thisTabview, "message center");
-	//创建tab2的label
+    //创建tab2的label
     tv.label[MESSAGE_CONTENT] = lv_label_create(tv.tab[MESSAGE]);
     lv_obj_align(tv.label[MESSAGE_CONTENT], LV_ALIGN_CENTER, 0, 0);
     lv_label_set_text(tv.label[MESSAGE_CONTENT], "This is where \nreminder messages are placed");
 
-	//设置选项卡按钮的样式
-	//先获取btns区域的对象
+    //设置选项卡按钮的样式
+    //先获取btns区域的对象
     tv.btns = lv_tabview_get_tab_btns(tv.thisTabview);
-	//设置默认状态的背景以及字体颜色
+    //设置默认状态的背景以及字体颜色
     lv_obj_set_style_bg_color(tv.btns, lv_color_hex(0xb7472a), LV_PART_ITEMS | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(tv.btns, 200, LV_PART_ITEMS | LV_STATE_DEFAULT);
     lv_obj_set_style_text_color(tv.btns, lv_color_hex(0xf3f3f3), LV_PART_ITEMS | LV_STATE_DEFAULT);
 
-	//设置选中状态的背景以及字体颜色
+    //设置选中状态的背景以及字体颜色
     lv_obj_set_style_bg_color(tv.btns, lv_color_hex(0xe1e1e1), LV_PART_ITEMS | LV_STATE_CHECKED);
     lv_obj_set_style_bg_opa(tv.btns, 200, LV_PART_ITEMS | LV_STATE_CHECKED);
     lv_obj_set_style_text_color(tv.btns, lv_color_hex(0xb7472a), LV_PART_ITEMS | LV_STATE_CHECKED);
     lv_obj_set_style_border_width(tv.btns, 0, LV_PART_ITEMS | LV_STATE_CHECKED);
 
-	//获取容器对象
+    //获取容器对象
     tv.content = lv_tabview_get_content(tv.thisTabview);
-	//设置容器区域的样式
+    //设置容器区域的样式
     lv_obj_set_style_bg_color(tv.content, lv_color_hex(0xffffff), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(tv.content, 255, LV_STATE_DEFAULT);
 
