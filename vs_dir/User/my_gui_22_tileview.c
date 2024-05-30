@@ -13,8 +13,8 @@
 
 #define scr_act_height() lv_obj_get_height(lv_scr_act())
 #define scr_act_width() lv_obj_get_width(lv_scr_act())
-
-#define MSGBOX_FOOTER_BTN_MAX      3
+#define TILEVIEW_TILEMAX 4
+#define TILEVIEW_LABELMAX 8
 
 //为了兼容8，9版本函数
 #if (LVGL_VERSION_MAJOR == 9)
@@ -25,19 +25,6 @@
 static int16_t calc_offset_len(uint16_t baseLenOneSide, uint16_t ElemLenOneSide, uint8_t NumOfElem, uint8_t elemId, uint8_t alignType);
 
 const lv_font_t* g_font;
-typedef struct
-{
-    lv_obj_t* obj;
-    lv_obj_t* header;
-    lv_obj_t* title;
-    lv_obj_t* titleBtn;
-    lv_obj_t* footerBtn[MSGBOX_FOOTER_BTN_MAX];
-    lv_obj_t* content;
-    lv_obj_t* contentLabel;
-}_widgets_msgbox;
-
-
-_widgets_msgbox msgbox;
 
 #if !USE_FREERTOS
 static void timer_cb(lv_timer_t* timer)
@@ -47,100 +34,61 @@ static void timer_cb(lv_timer_t* timer)
 #endif
 
 
-//static void test_cb(lv_event_t* event)
-//{
-//
-//}
-
-
-static void msgbox_cb(lv_event_t* e)
+static void test_cb(lv_event_t* event)
 {
-    lv_obj_t* target = lv_event_get_target(e);
-    lv_obj_add_flag(target->parent->parent, LV_OBJ_FLAG_HIDDEN);
+
 }
 
-
-static void slider_cb(lv_event_t* e)
+typedef struct
 {
-    lv_obj_t* target = lv_event_get_target(e);
-    uint32_t value = lv_slider_get_value(target);
-    if (value >= 80)
-    {
-        lv_obj_remove_flag(msgbox.obj, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_remove_event_cb(target, slider_cb);
-    }
-}
+    lv_obj_t* thisTilev;
+    lv_obj_t* tiles[TILEVIEW_TILEMAX];
+    lv_obj_t* label[TILEVIEW_LABELMAX];
+}_tileviewAttr;
 
-
-void show_msgbox(void)
+void show_tileview(void)
 {
-#if (LVGL_VERSION_MAJOR == 9)
-    //-------------------初始化各零件--------------------------
-    msgbox.obj = lv_msgbox_create(lv_scr_act());
-    msgbox.title = lv_msgbox_add_title(msgbox.obj, LV_SYMBOL_WARNING"warning");
-    msgbox.contentLabel = lv_msgbox_add_text(msgbox.obj, "Too much noise can damage your hearing. Shall we continue?");
-    msgbox.footerBtn[0] = lv_msgbox_add_footer_button(msgbox.obj, "");
-    msgbox.footerBtn[1] = lv_msgbox_add_footer_button(msgbox.obj, "");
-    msgbox.footerBtn[2] = lv_msgbox_add_footer_button(msgbox.obj, "close");
-    //调试看下header和title一样不？；content和contentLabel一样不
-    msgbox.header = lv_msgbox_get_header(msgbox.obj);
-    msgbox.content = lv_msgbox_get_content(msgbox.obj);
-#else
+    _tileviewAttr tilev;
+    //创建平铺视图并添加视图
+    tilev.thisTilev = lv_tileview_create(lv_scr_act());
+    tilev.tiles[0] = lv_tileview_add_tile(tilev.thisTilev, 0, 0, LV_DIR_RIGHT);
+    tilev.tiles[1] = lv_tileview_add_tile(tilev.thisTilev, 1, 0, LV_DIR_HOR);
+    tilev.tiles[2] = lv_tileview_add_tile(tilev.thisTilev, 2, 0, LV_DIR_LEFT);
+    //移除滚动条美化外观
+    lv_obj_remove_style(tilev.thisTilev, NULL, LV_PART_SCROLLBAR);
+    //更新布局并设置默认视图
+    lv_obj_update_layout(tilev.thisTilev);
+    lv_obj_set_tile_id(tilev.thisTilev, 1, 0, LV_ANIM_ON);
 
-#endif
-
-    //-------------------设置各大小，位置属性---------------------
-    //设置窗口大小，居中位置
-    lv_obj_set_size(msgbox.obj, scr_act_width() * 3 / 5, scr_act_height() * 5 / 18);
-    lv_obj_center(msgbox.obj);
-    lv_obj_update_layout(msgbox.obj);
-
-    //设置头部高度
-    lv_obj_set_height(msgbox.header, 40);
-
-
-    //设置content的字体，移除滚动条
-    lv_obj_set_style_text_font(msgbox.contentLabel, g_font, LV_PART_MAIN);
-    lv_obj_remove_style(msgbox.content, NULL, LV_PART_SCROLLBAR);
-
-    //-------------------obj和各零件样式优化---------------------
-    //设置窗口边框,边框颜色，圆角
-    lv_obj_set_style_border_width(msgbox.obj, 1, LV_PART_MAIN);
-    lv_obj_set_style_border_color(msgbox.obj, lv_color_make(116, 125, 136), LV_PART_MAIN);
-    lv_obj_set_style_border_opa(msgbox.obj, 50, LV_PART_MAIN);
-
-    //设置标题颜色
-    lv_obj_set_style_text_color(msgbox.header, lv_color_make(232, 9, 36), LV_PART_MAIN);
-    lv_obj_set_style_bg_color(msgbox.header, lv_color_make(250, 250, 250), LV_PART_MAIN);
-
-    //设置按钮样式
-    //隐藏前2个按钮
-    lv_obj_set_style_shadow_opa(msgbox.footerBtn[0], 0, LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(msgbox.footerBtn[0], 0, LV_PART_MAIN);
-    lv_obj_set_style_shadow_opa(msgbox.footerBtn[1], 0, LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(msgbox.footerBtn[1], 0, LV_PART_MAIN);
-    //第三个按钮只留文字，颜色优化
-    lv_obj_set_style_shadow_opa(msgbox.footerBtn[2], 0, LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(msgbox.footerBtn[2], 0, LV_PART_MAIN);
-    lv_obj_set_style_text_color(msgbox.footerBtn[2], lv_color_make(85, 170, 255), LV_PART_MAIN);
-
-    //先隐藏
-    lv_obj_add_flag(msgbox.obj, LV_OBJ_FLAG_HIDDEN);
+    //添加各视图的label
+    tilev.label[0] = lv_label_create(tilev.tiles[0]);
+    tilev.label[1] = lv_label_create(tilev.tiles[1]);
+    tilev.label[2] = lv_label_create(tilev.tiles[2]);
+    //设置label
+    lv_obj_set_style_text_font(tilev.label[0], g_font, LV_PART_MAIN);
+    lv_label_set_text(tilev.label[0], "                 view1               =>");
+    lv_obj_center(tilev.label[0]);
+    lv_obj_set_style_text_font(tilev.label[1], g_font, LV_PART_MAIN);
+    lv_label_set_text(tilev.label[1], "<=               view2               =>");
+    lv_obj_center(tilev.label[1]);
+    lv_obj_set_style_text_font(tilev.label[2], g_font, LV_PART_MAIN);
+    lv_label_set_text(tilev.label[2], "<=               view3                 ");
+    lv_obj_center(tilev.label[2]);
 
 
-    //-------------------创建事件---------------------
-    lv_obj_add_event_cb(msgbox.footerBtn[2], msgbox_cb, LV_EVENT_CLICKED, NULL);
-}
+
+    //创建左上角，右上角的图标
+    lv_obj_t* label = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_font(label, g_font, LV_PART_MAIN);
+    lv_label_set_text_fmt(label, "%s%s", LV_SYMBOL_HOME, " 8:30 A.M");
+    lv_obj_align(label, LV_ALIGN_TOP_LEFT, 0, 0);
+
+    label = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_font(label, g_font, LV_PART_MAIN);
+    lv_label_set_text_fmt(label, "%s %s", LV_SYMBOL_WIFI, LV_SYMBOL_BATTERY_3);
+    lv_obj_align(label, LV_ALIGN_TOP_RIGHT, 0, 0);
 
 
-void show_slider(void)
-{
-    lv_obj_t* slider = lv_slider_create(lv_scr_act());
-    lv_slider_set_range(slider, 0, 100);
-    lv_obj_set_width(slider, scr_act_width() * 4 / 5);
-    lv_obj_center(slider);
-    //创建slider事件
-    lv_obj_add_event_cb(slider, slider_cb, LV_EVENT_VALUE_CHANGED, NULL);
 }
 
 
@@ -162,19 +110,21 @@ void GUI_test(void)
         g_font = &lv_font_montserrat_22;
     }
     //测试代码
-    //lv_obj_t* obj = lv_msgbox_create(lv_scr_act());
-    ////添加标题
-    //lv_msgbox_add_title(obj, LV_SYMBOL_WARNING"warning");
-    ////添加关闭按钮
-    //lv_msgbox_add_close_button(obj);
-    ////添加容器文本
-    //lv_msgbox_add_text(obj,"test");
-    ////添加页脚按钮
-    //lv_msgbox_add_footer_button(obj,"close");
+    //lv_obj_t* tilev = lv_tileview_create(lv_scr_act());
+    ////添加一个tile，返回tile视图对象。
+    ////参数为base，列，行，可以往哪个方向滑动。其中列，行参数可以理解为x轴，Y轴
+    //lv_obj_t* tile1 = lv_tileview_add_tile(tilev, 0, 0, LV_DIR_RIGHT);
+    //lv_obj_t* tile2 = lv_tileview_add_tile(tilev, 1, 0, LV_DIR_LEFT | LV_DIR_BOTTOM);
+    //lv_obj_t* tile3 = lv_tileview_add_tile(tilev, 1, 1, LV_DIR_TOP);
 
-    show_slider();
-    show_msgbox();
+    ////平铺视图部件，如果要设置默认视图，需要先更新tileview的布局
+    //lv_obj_update_layout(tilev);
+    ////设置默认显示的页面，以下两个函数都可以，一个是通过对象设置，一个是通过位置设置
+    //lv_obj_set_tile(tilev, tile2, LV_ANIM_ON);
+    ////lv_obj_set_tile_id(tilev, 1, 1, LV_ANIM_ON);
 
+
+    show_tileview();
     return;
 }
 
