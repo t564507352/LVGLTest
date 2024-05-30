@@ -14,16 +14,30 @@
 #define scr_act_height() lv_obj_get_height(lv_scr_act())
 #define scr_act_width() lv_obj_get_width(lv_scr_act())
 
+#define MSGBOX_FOOTER_BTN_MAX      3
+
 //为了兼容8，9版本函数
 #if (LVGL_VERSION_MAJOR == 9)
-#define lv_tabview_create(x, y, z)    lv_tabview_create(x);lv_tabview_set_tab_bar_size(tv.thisTabview, z)
+
 #endif
 
-#define TABMAX 3
-#define TABLABMAX 6
+
 static int16_t calc_offset_len(uint16_t baseLenOneSide, uint16_t ElemLenOneSide, uint8_t NumOfElem, uint8_t elemId, uint8_t alignType);
 
 const lv_font_t* g_font;
+typedef struct
+{
+    lv_obj_t* obj;
+    lv_obj_t* header;
+    lv_obj_t* title;
+    lv_obj_t* titleBtn;
+    lv_obj_t* footerBtn[MSGBOX_FOOTER_BTN_MAX];
+    lv_obj_t* content;
+    lv_obj_t* contentLabel;
+}_widgets_msgbox;
+
+
+_widgets_msgbox msgbox;
 
 #if !USE_FREERTOS
 static void timer_cb(lv_timer_t* timer)
@@ -33,86 +47,139 @@ static void timer_cb(lv_timer_t* timer)
 #endif
 
 
-static void test_cb(lv_event_t* event)
+//static void test_cb(lv_event_t* event)
+//{
+//
+//}
+
+//msgbox部件在8版本和9版本中有较大不同：
+//1：创建函数不同，8版本中需要将部件属性一同写进去，9则分开填
+//2：页尾的按钮，8版本中是按钮矩阵，9中好像是一个一个的按钮，需要分别创建
+//3：添加事件回调的方式不同：8版本中要对msgbox的对象添加回调函数，event为LV_EVENT_VALUE_CHANGED，而9版本中则只能对单独的按钮添加回调
+//4：事件回调中取值方式不同，8版本中先用lv_event_get_current_target()取obj，再lv_msgbox_get_active_btn获取按钮编号； 9版本则需按常规的按钮来处理
+
+
+static void msgbox_cb(lv_event_t* e)
 {
-
-}
-
-//所有选项卡要用到的零件
-typedef struct
-{
-    lv_obj_t* base;
-    lv_obj_t* thisTabview;
-    lv_obj_t* tab[TABMAX];
-    lv_obj_t* label[TABLABMAX];
-    lv_obj_t* btns;
-    lv_obj_t* content;
-}_tabviewAttr;
-
-typedef enum {
-    CONTROL = 0,
-    MESSAGE,
-} __tvTab;
-
-typedef enum {
-    CONTROL_OPTION = 0,
-    CONTROL_TIPS,
-    MESSAGE_CONTENT,
-} __tvTabLabel;
-
-
-void show_tabview(void)
-{
-	//初始化选项卡零件结构体
-    _tabviewAttr tv;
-    tv.base = lv_scr_act();
-	//创建选项卡，设置字体
-    tv.thisTabview = lv_tabview_create(tv.base, LV_DIR_TOP, scr_act_height() / 10);
-    lv_obj_set_style_text_font(tv.thisTabview, g_font, LV_PART_MAIN);
-
-	//添加tab1
-    tv.tab[CONTROL] = lv_tabview_add_tab(tv.thisTabview, "control center");
-	//创建tab1的label1
-    tv.label[CONTROL_OPTION] = lv_label_create(tv.tab[CONTROL]);
-    lv_obj_align(tv.label[CONTROL_OPTION], LV_ALIGN_CENTER, 0, 0);
-    lv_label_set_text_fmt(tv.label[CONTROL_OPTION], "Here you put the \ncontrol options button");
-    tv.label[CONTROL_TIPS] = lv_label_create(tv.tab[CONTROL]);
-	//创建tab1的label2
-    lv_obj_align(tv.label[CONTROL_TIPS], LV_ALIGN_BOTTOM_MID, 0, 0);
-    lv_label_set_text(tv.label[CONTROL_TIPS], "Here you put the \ncontrol tips");
-
-	//添加tab2
-    tv.tab[MESSAGE] = lv_tabview_add_tab(tv.thisTabview, "message center");
-	//创建tab2的label
-    tv.label[MESSAGE_CONTENT] = lv_label_create(tv.tab[MESSAGE]);
-    lv_obj_align(tv.label[MESSAGE_CONTENT], LV_ALIGN_CENTER, 0, 0);
-    lv_label_set_text(tv.label[MESSAGE_CONTENT], "This is where \nreminder messages are placed");
-
-	//设置选项卡按钮的样式
-	//先获取btns区域的对象
-    tv.btns = lv_tabview_get_tab_btns(tv.thisTabview);
-	//设置默认状态的背景以及字体颜色
-    lv_obj_set_style_bg_color(tv.btns, lv_color_hex(0xb7472a), LV_PART_ITEMS | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(tv.btns, 200, LV_PART_ITEMS | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_color(tv.btns, lv_color_hex(0xf3f3f3), LV_PART_ITEMS | LV_STATE_DEFAULT);
-
-	//设置选中状态的背景以及字体颜色
-    lv_obj_set_style_bg_color(tv.btns, lv_color_hex(0xe1e1e1), LV_PART_ITEMS | LV_STATE_CHECKED);
-    lv_obj_set_style_bg_opa(tv.btns, 200, LV_PART_ITEMS | LV_STATE_CHECKED);
-    lv_obj_set_style_text_color(tv.btns, lv_color_hex(0xb7472a), LV_PART_ITEMS | LV_STATE_CHECKED);
-    lv_obj_set_style_border_width(tv.btns, 0, LV_PART_ITEMS | LV_STATE_CHECKED);
-
-	//获取容器对象
-    tv.content = lv_tabview_get_content(tv.thisTabview);
-	//设置容器区域的样式
-    lv_obj_set_style_bg_color(tv.content, lv_color_hex(0xffffff), LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(tv.content, 255, LV_STATE_DEFAULT);
-
-    ////想要把滚动条隐藏，不知为啥不奏效
-    lv_obj_remove_style(tv.content, NULL, LV_PART_SCROLLBAR);
+#if (LVGL_VERSION_MAJOR == 9)
+    lv_obj_t* target = lv_event_get_target(e);
+    lv_obj_add_flag(target->parent->parent, LV_OBJ_FLAG_HIDDEN);
+#else
+	lv_obj_t *target = lv_event_get_current_target(e);               
+    if(lv_msgbox_get_active_btn(target) == 2)                        
+    {
+        lv_obj_add_flag(msgbox.obj, LV_OBJ_FLAG_HIDDEN);                   
+    }
+#endif
 }
 
 
+static void slider_cb(lv_event_t* e)
+{
+    lv_obj_t* target = lv_event_get_target(e);
+    uint32_t value = lv_slider_get_value(target);
+    if (value >= 80)
+    {
+#if (LVGL_VERSION_MAJOR == 9)
+		lv_obj_remove_flag(msgbox.obj, LV_OBJ_FLAG_HIDDEN);
+#else
+		lv_obj_clear_flag(msgbox.obj, LV_OBJ_FLAG_HIDDEN);
+#endif
+        lv_obj_remove_event_cb(target, slider_cb);
+    }
+}
+
+
+
+void show_msgbox(void)
+{
+#if (LVGL_VERSION_MAJOR == 9)
+    //-------------------初始化各零件--------------------------
+    msgbox.obj = lv_msgbox_create(lv_scr_act());
+    msgbox.title = lv_msgbox_add_title(msgbox.obj, LV_SYMBOL_WARNING"warning");
+    msgbox.contentLabel = lv_msgbox_add_text(msgbox.obj, "Too much noise can damage your hearing. Shall we continue?");
+    msgbox.footerBtn[0] = lv_msgbox_add_footer_button(msgbox.obj, "");
+    msgbox.footerBtn[1] = lv_msgbox_add_footer_button(msgbox.obj, "");
+    msgbox.footerBtn[2] = lv_msgbox_add_footer_button(msgbox.obj, "close");
+    //调试看下header和title一样不？；content和contentLabel一样不
+    msgbox.header = lv_msgbox_get_header(msgbox.obj);
+    msgbox.content = lv_msgbox_get_content(msgbox.obj);
+#else
+	static const char* msgboxMap[] = {" "," ","close",""};
+	msgbox.obj = lv_msgbox_create(lv_scr_act(), LV_SYMBOL_WARNING"warning", "Too much noise can damage your hearing. Shall we continue?", msgboxMap, false);
+    msgbox.title = lv_msgbox_get_title(msgbox.obj);
+    msgbox.contentLabel = lv_msgbox_get_text(msgbox.obj);
+    msgbox.footerBtn[2] = lv_msgbox_get_btns(msgbox.obj);
+    //调试看下header和title一样不？；content和contentLabel一样不
+    msgbox.header = msgbox.title;
+    msgbox.content = lv_msgbox_get_content(msgbox.obj);
+#endif
+
+    //-------------------设置各大小，位置属性---------------------
+    //设置窗口大小，居中位置
+//    lv_obj_set_size(msgbox.obj, scr_act_width() * 3 / 5, scr_act_height() * 5 / 18);
+    lv_obj_center(msgbox.obj);
+    lv_obj_update_layout(msgbox.obj);
+
+    //设置头部高度
+    lv_obj_set_height(msgbox.header, 40);
+
+
+    //设置content的字体，移除滚动条
+    lv_obj_set_style_text_font(msgbox.contentLabel, g_font, LV_PART_MAIN);
+    lv_obj_remove_style(msgbox.content, NULL, LV_PART_SCROLLBAR);
+
+    //-------------------obj和各零件样式优化---------------------
+    //设置窗口边框,边框颜色，圆角
+    lv_obj_set_style_border_width(msgbox.obj, 1, LV_PART_MAIN);
+    lv_obj_set_style_border_color(msgbox.obj, lv_color_make(116, 125, 136), LV_PART_MAIN);
+    lv_obj_set_style_border_opa(msgbox.obj, 50, LV_PART_MAIN);
+
+    //设置标题颜色
+    lv_obj_set_style_text_color(msgbox.header, lv_color_make(232, 9, 36), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(msgbox.header, lv_color_make(250, 250, 250), LV_PART_MAIN);
+#if (LVGL_VERSION_MAJOR == 9)
+    //设置按钮样式
+    //隐藏前2个按钮
+    lv_obj_set_style_shadow_opa(msgbox.footerBtn[0], 0, LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(msgbox.footerBtn[0], 0, LV_PART_MAIN);
+    lv_obj_set_style_shadow_opa(msgbox.footerBtn[1], 0, LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(msgbox.footerBtn[1], 0, LV_PART_MAIN);
+    //第三个按钮只留文字，颜色优化
+    lv_obj_set_style_shadow_opa(msgbox.footerBtn[2], 0, LV_PART_MAIN);
+	lv_obj_set_style_shadow_opa(msgbox.footerBtn[2], 0, LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(msgbox.footerBtn[2], 0, LV_PART_MAIN);
+    lv_obj_set_style_text_color(msgbox.footerBtn[2], lv_color_make(85, 170, 255), LV_PART_MAIN);
+#else
+	lv_obj_set_style_shadow_opa(msgbox.footerBtn[2], 0, LV_PART_ITEMS);
+	lv_obj_set_style_shadow_opa(msgbox.footerBtn[2], 0, LV_PART_ITEMS);
+    lv_obj_set_style_bg_opa(msgbox.footerBtn[2], 0, LV_PART_ITEMS);
+    lv_obj_set_style_text_color(msgbox.footerBtn[2], lv_color_make(85, 170, 255), LV_PART_ITEMS);
+	lv_obj_set_style_text_color(msgbox.footerBtn[2], lv_color_make(255, 0, 0), LV_PART_ITEMS | LV_STATE_PRESSED);
+	
+#endif
+    //先隐藏
+    lv_obj_add_flag(msgbox.obj, LV_OBJ_FLAG_HIDDEN);
+
+
+    //-------------------创建事件---------------------
+#if (LVGL_VERSION_MAJOR == 9) 
+    lv_obj_add_event_cb(msgbox.footerBtn[2], msgbox_cb, LV_EVENT_CLICKED, NULL);
+#else
+	lv_obj_add_event_cb(msgbox.obj, msgbox_cb, LV_EVENT_VALUE_CHANGED, NULL); 
+#endif
+}
+
+
+void show_slider(void)
+{
+    lv_obj_t* slider = lv_slider_create(lv_scr_act());
+    lv_slider_set_range(slider, 0, 100);
+    lv_obj_set_width(slider, scr_act_width() * 4 / 5);
+    lv_obj_center(slider);
+    //创建slider事件
+    lv_obj_add_event_cb(slider, slider_cb, LV_EVENT_VALUE_CHANGED, NULL);
+}
 
 
 void GUI_test(void)
@@ -133,21 +200,18 @@ void GUI_test(void)
         g_font = &lv_font_montserrat_22;
     }
     //测试代码
-    //lv_obj_t* obj = lv_tabview_create(lv_scr_act());
-    ////设施选项卡上面的标题栏的宽度
-    //lv_tabview_set_tab_bar_size(obj, scr_act_height() / 10);
-    ////为选项卡添加tab
-    //lv_obj_t* objTab1 = lv_tabview_add_tab(obj, "msg");
-    //lv_obj_t* objTab2 = lv_tabview_add_tab(obj, "date");
-    ////设置默认选中的tab
-    //lv_tabview_set_act(obj, 1, LV_ANIM_ON);
-    ////以tab1为容器创建label
-    //lv_obj_t* objTab1Label = lv_label_create(objTab1);
-    ////获取tabview中的按钮部分的对象
-    //lv_obj_t* tempBtns = lv_tabview_get_tab_btns(obj);
+    //lv_obj_t* obj = lv_msgbox_create(lv_scr_act());
+    ////添加标题
+    //lv_msgbox_add_title(obj, LV_SYMBOL_WARNING"warning");
+    ////添加关闭按钮
+    //lv_msgbox_add_close_button(obj);
+    ////添加容器文本
+    //lv_msgbox_add_text(obj,"test");
+    ////添加页脚按钮
+    //lv_msgbox_add_footer_button(obj,"close");
 
-
-    show_tabview();
+    show_slider();
+    show_msgbox();
 
     return;
 }
