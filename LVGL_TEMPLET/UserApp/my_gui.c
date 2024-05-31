@@ -11,175 +11,78 @@
 #include "queue.h"
 #endif	
 
-#define scr_act_height() lv_obj_get_height(lv_scr_act())
-#define scr_act_width() lv_obj_get_width(lv_scr_act())
-
-#define MSGBOX_FOOTER_BTN_MAX      3
-
 //为了兼容8，9版本函数
 #if (LVGL_VERSION_MAJOR == 9)
-
+#define lv_spinbox_set_pos(x, y)     lv_spinbox_set_cursor_pos(x, y)
 #endif
+#define scr_act_height() lv_obj_get_height(lv_scr_act())
+#define scr_act_width() lv_obj_get_width(lv_scr_act())
 
 
 static int16_t calc_offset_len(uint16_t baseLenOneSide, uint16_t ElemLenOneSide, uint8_t NumOfElem, uint8_t elemId, uint8_t alignType);
 
 const lv_font_t* g_font;
-typedef struct
+lv_obj_t* g_spinbox;
+
+//减法回调，显示当前数值
+static void subBtn_cb(lv_event_t* e)
 {
-    lv_obj_t* obj;
-    lv_obj_t* header;
-    lv_obj_t* title;
-    lv_obj_t* titleBtn;
-    lv_obj_t* footerBtn[MSGBOX_FOOTER_BTN_MAX];
-    lv_obj_t* content;
-    lv_obj_t* contentLabel;
-}_widgets_msgbox;
-
-
-_widgets_msgbox msgbox;
-
-#if !USE_FREERTOS
-static void timer_cb(lv_timer_t* timer)
-{
-
+    lv_spinbox_decrement(g_spinbox);
+    printf(" %0.1f\n", (float)lv_spinbox_get_value(g_spinbox) / 10);
 }
-#endif
 
-
-//static void test_cb(lv_event_t* event)
-//{
-//
-//}
-
-//msgbox部件在8版本和9版本中有较大不同：
-//1：创建函数不同，8版本中需要将部件属性一同写进去，9则分开填
-//2：页尾的按钮，8版本中是按钮矩阵，9中好像是一个一个的按钮，需要分别创建
-//3：添加事件回调的方式不同：8版本中要对msgbox的对象添加回调函数，event为LV_EVENT_VALUE_CHANGED，而9版本中则只能对单独的按钮添加回调
-//4：事件回调中取值方式不同，8版本中先用lv_event_get_current_target()取obj，再lv_msgbox_get_active_btn获取按钮编号； 9版本则需按常规的按钮来处理
-
-
-static void msgbox_cb(lv_event_t* e)
+//加法回调，显示当前数值
+static void addBtn_cb(lv_event_t* e)
 {
-#if (LVGL_VERSION_MAJOR == 9)
-    lv_obj_t* target = lv_event_get_target(e);
-    lv_obj_add_flag(target->parent->parent, LV_OBJ_FLAG_HIDDEN);
-#else
-	lv_obj_t *target = lv_event_get_current_target(e);               
-    if(lv_msgbox_get_active_btn(target) == 2)                        
-    {
-        lv_obj_add_flag(msgbox.obj, LV_OBJ_FLAG_HIDDEN);                   
-    }
-#endif
+    lv_spinbox_increment(g_spinbox);
+    printf(" %0.1f\n", (float)lv_spinbox_get_value(g_spinbox) /10);
 }
 
 
-static void slider_cb(lv_event_t* e)
+void show_spinbox(void)
 {
-    lv_obj_t* target = lv_event_get_target(e);
-    uint32_t value = lv_slider_get_value(target);
-    if (value >= 80)
-    {
-#if (LVGL_VERSION_MAJOR == 9)
-		lv_obj_remove_flag(msgbox.obj, LV_OBJ_FLAG_HIDDEN);
-#else
-		lv_obj_clear_flag(msgbox.obj, LV_OBJ_FLAG_HIDDEN);
-#endif
-        lv_obj_remove_event_cb(target, slider_cb);
-    }
+    //微调器因为小数点只是装饰品，所以先确定小数是几位的，然后其他数值全都响应乘以倍数，组后好计算
+
+    //创建
+    g_spinbox = lv_spinbox_create(lv_scr_act());
+    lv_obj_center(g_spinbox);
+    // 设置光标为2，也就是步进值为100
+    lv_spinbox_set_pos(g_spinbox, 2);
+    // 设置当前值
+    lv_spinbox_set_value(g_spinbox, 0);
+    //设置微调器的范围值格式
+    lv_spinbox_set_range(g_spinbox, -10000, 10000);
+    //设置显示的数字格式（显示多少位）与小数点的位置，注意，小数点只是装饰，位置是从前面数的
+    lv_spinbox_set_digit_format(g_spinbox, 5, 4);
+    lv_obj_update_layout(g_spinbox);
+
+
+    //创建减法按钮与符号label
+    lv_obj_t* subBtn = lv_btn_create(lv_scr_act());
+    lv_obj_set_size(subBtn, 30, lv_obj_get_height(g_spinbox));
+    lv_obj_t* btnLabel = lv_label_create(subBtn);
+    lv_obj_set_style_text_font(btnLabel, g_font, LV_PART_MAIN);
+    lv_obj_center(btnLabel);
+    lv_label_set_text(btnLabel, LV_SYMBOL_MINUS);
+    lv_obj_align_to(subBtn, g_spinbox, LV_ALIGN_OUT_LEFT_BOTTOM, -5, 0);
+
+    //创建加法按钮与符号label
+    lv_obj_t* addBtn = lv_btn_create(lv_scr_act());
+    lv_obj_set_size(addBtn, 30, lv_obj_get_height(g_spinbox));
+    btnLabel = lv_label_create(addBtn);
+    lv_obj_set_style_text_font(btnLabel, g_font, LV_PART_MAIN);
+    lv_obj_center(btnLabel);
+    lv_label_set_text(btnLabel, LV_SYMBOL_PLUS);
+    lv_obj_align_to(addBtn, g_spinbox, LV_ALIGN_OUT_RIGHT_BOTTOM, 5, 0);
+
+    //添加事件
+    lv_obj_add_event_cb(subBtn, subBtn_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(addBtn, addBtn_cb, LV_EVENT_CLICKED, NULL);
+
 }
 
 
 
-void show_msgbox(void)
-{
-#if (LVGL_VERSION_MAJOR == 9)
-    //-------------------初始化各零件--------------------------
-    msgbox.obj = lv_msgbox_create(lv_scr_act());
-    msgbox.title = lv_msgbox_add_title(msgbox.obj, LV_SYMBOL_WARNING"warning");
-    msgbox.contentLabel = lv_msgbox_add_text(msgbox.obj, "Too much noise can damage your hearing. Shall we continue?");
-    msgbox.footerBtn[0] = lv_msgbox_add_footer_button(msgbox.obj, "");
-    msgbox.footerBtn[1] = lv_msgbox_add_footer_button(msgbox.obj, "");
-    msgbox.footerBtn[2] = lv_msgbox_add_footer_button(msgbox.obj, "close");
-    //调试看下header和title一样不？；content和contentLabel一样不
-    msgbox.header = lv_msgbox_get_header(msgbox.obj);
-    msgbox.content = lv_msgbox_get_content(msgbox.obj);
-#else
-	static const char* msgboxMap[] = {" "," ","close",""};
-	msgbox.obj = lv_msgbox_create(lv_scr_act(), LV_SYMBOL_WARNING"warning", "Too much noise can damage your hearing. Shall we continue?", msgboxMap, false);
-    msgbox.title = lv_msgbox_get_title(msgbox.obj);
-    msgbox.contentLabel = lv_msgbox_get_text(msgbox.obj);
-    msgbox.footerBtn[2] = lv_msgbox_get_btns(msgbox.obj);
-    //调试看下header和title一样不？；content和contentLabel一样不
-    msgbox.header = msgbox.title;
-    msgbox.content = lv_msgbox_get_content(msgbox.obj);
-#endif
-
-    //-------------------设置各大小，位置属性---------------------
-    //设置窗口大小，居中位置
-//    lv_obj_set_size(msgbox.obj, scr_act_width() * 3 / 5, scr_act_height() * 5 / 18);
-    lv_obj_center(msgbox.obj);
-    lv_obj_update_layout(msgbox.obj);
-
-    //设置头部高度
-    lv_obj_set_height(msgbox.header, 40);
-
-
-    //设置content的字体，移除滚动条
-    lv_obj_set_style_text_font(msgbox.contentLabel, g_font, LV_PART_MAIN);
-    lv_obj_remove_style(msgbox.content, NULL, LV_PART_SCROLLBAR);
-
-    //-------------------obj和各零件样式优化---------------------
-    //设置窗口边框,边框颜色，圆角
-    lv_obj_set_style_border_width(msgbox.obj, 1, LV_PART_MAIN);
-    lv_obj_set_style_border_color(msgbox.obj, lv_color_make(116, 125, 136), LV_PART_MAIN);
-    lv_obj_set_style_border_opa(msgbox.obj, 50, LV_PART_MAIN);
-
-    //设置标题颜色
-    lv_obj_set_style_text_color(msgbox.header, lv_color_make(232, 9, 36), LV_PART_MAIN);
-    lv_obj_set_style_bg_color(msgbox.header, lv_color_make(250, 250, 250), LV_PART_MAIN);
-#if (LVGL_VERSION_MAJOR == 9)
-    //设置按钮样式
-    //隐藏前2个按钮
-    lv_obj_set_style_shadow_opa(msgbox.footerBtn[0], 0, LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(msgbox.footerBtn[0], 0, LV_PART_MAIN);
-    lv_obj_set_style_shadow_opa(msgbox.footerBtn[1], 0, LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(msgbox.footerBtn[1], 0, LV_PART_MAIN);
-    //第三个按钮只留文字，颜色优化
-    lv_obj_set_style_shadow_opa(msgbox.footerBtn[2], 0, LV_PART_MAIN);
-	lv_obj_set_style_shadow_opa(msgbox.footerBtn[2], 0, LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(msgbox.footerBtn[2], 0, LV_PART_MAIN);
-    lv_obj_set_style_text_color(msgbox.footerBtn[2], lv_color_make(85, 170, 255), LV_PART_MAIN);
-#else
-	lv_obj_set_style_shadow_opa(msgbox.footerBtn[2], 0, LV_PART_ITEMS);
-	lv_obj_set_style_shadow_opa(msgbox.footerBtn[2], 0, LV_PART_ITEMS);
-    lv_obj_set_style_bg_opa(msgbox.footerBtn[2], 0, LV_PART_ITEMS);
-    lv_obj_set_style_text_color(msgbox.footerBtn[2], lv_color_make(85, 170, 255), LV_PART_ITEMS);
-	lv_obj_set_style_text_color(msgbox.footerBtn[2], lv_color_make(255, 0, 0), LV_PART_ITEMS | LV_STATE_PRESSED);
-	
-#endif
-    //先隐藏
-    lv_obj_add_flag(msgbox.obj, LV_OBJ_FLAG_HIDDEN);
-
-
-    //-------------------创建事件---------------------
-#if (LVGL_VERSION_MAJOR == 9) 
-    lv_obj_add_event_cb(msgbox.footerBtn[2], msgbox_cb, LV_EVENT_CLICKED, NULL);
-#else
-	lv_obj_add_event_cb(msgbox.obj, msgbox_cb, LV_EVENT_VALUE_CHANGED, NULL); 
-#endif
-}
-
-
-void show_slider(void)
-{
-    lv_obj_t* slider = lv_slider_create(lv_scr_act());
-    lv_slider_set_range(slider, 0, 100);
-    lv_obj_set_width(slider, scr_act_width() * 4 / 5);
-    lv_obj_center(slider);
-    //创建slider事件
-    lv_obj_add_event_cb(slider, slider_cb, LV_EVENT_VALUE_CHANGED, NULL);
-}
 
 
 void GUI_test(void)
@@ -200,18 +103,29 @@ void GUI_test(void)
         g_font = &lv_font_montserrat_22;
     }
     //测试代码
-    //lv_obj_t* obj = lv_msgbox_create(lv_scr_act());
-    ////添加标题
-    //lv_msgbox_add_title(obj, LV_SYMBOL_WARNING"warning");
-    ////添加关闭按钮
-    //lv_msgbox_add_close_button(obj);
-    ////添加容器文本
-    //lv_msgbox_add_text(obj,"test");
-    ////添加页脚按钮
-    //lv_msgbox_add_footer_button(obj,"close");
+    //g_spinbox = lv_spinbox_create(lv_scr_act());
+    //lv_obj_center(g_spinbox);
+    ////设置步进数值，此函数与设置光标冲突，二选一
+    ////lv_spinbox_set_step(g_spinbox, 200);
+    //// 设置光标，从右边，0开始，实际也是设置步进值，此函数与设置步进值冲突，二选一。
+    //lv_spinbox_set_pos(g_spinbox, 2);
+    //// 设置当前值
+    //lv_spinbox_set_value(g_spinbox, 500);
+    ////设置微调器的范围值格式
+    //lv_spinbox_set_range(g_spinbox, -10000, 10000);
+    ////设置显示的数字格式（显示多少位）与小数点的位置，注意，小数点只是装饰，位置是从前面数的
+    //lv_spinbox_set_digit_format(g_spinbox, 6,5);
 
-    show_slider();
-    show_msgbox();
+    //lv_obj_t* subBtn = lv_btn_create(lv_scr_act());
+    //lv_obj_align_to(subBtn, g_spinbox, LV_ALIGN_OUT_LEFT_BOTTOM, 0, 0);
+    //lv_obj_t* addBtn = lv_btn_create(lv_scr_act());
+    //lv_obj_align_to(addBtn, g_spinbox, LV_ALIGN_OUT_RIGHT_BOTTOM, 0, 0);
+    //
+    //lv_obj_add_event_cb(subBtn, subBtn_cb, LV_EVENT_CLICKED, NULL);
+    //lv_obj_add_event_cb(addBtn, addBtn_cb, LV_EVENT_CLICKED, NULL);
+
+
+    show_spinbox();
 
     return;
 }
