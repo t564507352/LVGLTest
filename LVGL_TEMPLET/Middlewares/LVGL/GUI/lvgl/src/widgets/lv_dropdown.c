@@ -866,6 +866,9 @@ static void draw_main(lv_event_t * e)
 
 static void draw_list(lv_event_t * e)
 {
+	lv_group_t* g = lv_group_create();
+	
+	
     lv_obj_t * list_obj = lv_event_get_target(e);
     lv_dropdown_list_t * list = (lv_dropdown_list_t *)list_obj;
     lv_obj_t * dropdown_obj = list->dropdown;

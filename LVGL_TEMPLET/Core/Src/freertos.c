@@ -52,7 +52,7 @@
 osThreadId_t LVGLTaskHandle;
 const osThreadAttr_t LVGLTask_attributes = {
   .name = "LVGLTask",
-  .stack_size = (512 * 4 - 256),
+  .stack_size = (512 * 4),
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -104,7 +104,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-    defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

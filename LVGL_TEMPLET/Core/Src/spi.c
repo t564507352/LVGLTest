@@ -243,3 +243,4 @@ uint8_t SPI_WriteReadByte(uint8_t pdata)
     return read_data;
 }
 
+/* USER CODE END 1 */

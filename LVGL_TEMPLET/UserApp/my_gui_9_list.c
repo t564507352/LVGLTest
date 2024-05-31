@@ -10,6 +10,7 @@
 
 #endif
 
+
 const lv_font_t* g_font;
 lv_obj_t* g_base_left;
 lv_obj_t* g_base_right;
@@ -121,7 +122,7 @@ void GUI_test(void)
     //printf("%s", lv_list_get_btn_text(list, btn));
     ////添加按钮状态，被聚焦按下
     //lv_obj_add_state(btn, LV_STATE_FOCUS_KEY);
-	
+
     draw_base();
     draw_list();
     draw_label();
