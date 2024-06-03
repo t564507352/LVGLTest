@@ -7,7 +7,8 @@
  *      INCLUDES
  *********************/
 #include "../../../lvgl.h"
-
+#include "fatfs.h"
+#include <stdio.h>
 #if LV_USE_FS_FATFS
 #include "ff.h"
 
@@ -49,6 +50,7 @@ static lv_fs_res_t fs_dir_close(lv_fs_drv_t * drv, void * dir_p);
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
+FRESULT msg1;
 
 void lv_fs_fatfs_init(void)
 {
@@ -92,6 +94,27 @@ static void fs_init(void)
 {
     /*Initialize the SD card and FatFS itself.
      *Better to do it in your code to keep this library untouched for easy updating*/
+	msg1 = f_mount(&SDFatFS,SDPath,1);
+	if(msg1 == FR_NO_FILESYSTEM)
+	{
+		msg1 = f_mkfs(SDPath,0,0);
+		if(msg1 != FR_OK)
+		{
+			printf("f_mkfsErr\r\n");
+			while(1);
+		}
+		else
+		{
+			printf("noFileSys,f_mkfsSuc!\r\n");
+		}
+		msg1 = f_mount(&SDFatFS,SDPath,1);
+		if(msg1 != FR_OK)
+		{
+			printf("f_mountErr\r\n");
+			while(1);
+		}
+	}
+	printf("filesye mountSuc\r\n");
 }
 
 /**

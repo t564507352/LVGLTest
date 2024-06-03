@@ -21,8 +21,6 @@ void LVGLTask(void* params)
 		lv_port_disp_init();
 		lv_port_indev_init();
 		indev_keypad_group_init();
-		
-	
 
 		vTaskDelay(1000);
 		//	lv_demo_stress();

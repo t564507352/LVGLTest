@@ -20,6 +20,8 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "dma.h"
+#include "fatfs.h"
+#include "sdio.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -29,8 +31,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include "lcd_function.h"
-#include "XPT2046.h"
+#include "driver_fsmc_sram.h" 
+#include "./MALLOC/malloc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,7 +60,7 @@
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-
+#include <string.h>
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -100,8 +102,13 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
+  MX_SDIO_SD_Init();
+  MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
+  my_mem_init(SRAMIN);                /* 初始化内部SRAM内存池 */
+  FSMC_SRAM_Init();
   HAL_Delay(2000);
+  
   /* USER CODE END 2 */
 
   /* Init scheduler */
