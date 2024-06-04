@@ -52,7 +52,7 @@
 osThreadId_t LVGLTaskHandle;
 const osThreadAttr_t LVGLTask_attributes = {
   .name = "LVGLTask",
-  .stack_size = (512 * 4),
+  .stack_size = (512 * 4) + 256,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
